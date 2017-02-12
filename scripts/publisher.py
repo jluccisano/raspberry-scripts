@@ -4,8 +4,9 @@ import time
 import datetime
 import json
 import logging
+import argparse
 import dht22
-import yaml
+import os
 
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
               '-35s %(lineno) -5d: %(message)s')
@@ -80,8 +81,9 @@ class Publisher:
         self._channel.exchange_declare(callback=self.on_exchange_declareok, exchange= self.EXCHANGE, type=self.EXCHANGE_TYPE, durable=True)
 
 
-    def on_exchange_declareok(self):
+    def on_exchange_declareok(self, param):
         LOGGER.info('Exchange declared')
+        self.start_publishing()
 
     def start_publishing(self):
         LOGGER.info('Start publishing')
@@ -198,12 +200,22 @@ class Publisher:
 
 def main():
 
-    with open("/opt/dht22/_config.yml", 'r') as ymlfile:
-        cfg = yaml.load(ymlfile)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--amqp-url', help='URL of RabbitMQ instance', required=True)
+    parser.add_argument('--gatewayId',help='Gateway ID', required=True)
+    parser.add_argument('--sendFrom', help='Send from', required=True)
+    parser.add_argument('--exchange', help='Exchange name', required=True)
+    parser.add_argument('--publish-interval', help='Interval delay to send data', type=int, required=True)
+    parser.add_argument('--log-path', help='Path of log', required=True)
 
-    logging.basicConfig(filename='/var/log/dht22/publisher.log',level=LOGGER.DEBUG,format='%(asctime)s %(message)s')
+    args = parser.parse_args()
 
-    publisher = Publisher(cfg["rabbitmq"]["url"]+'/%2F?connection_attempts=10&heartbeat_interval=3600', cfg["rabbitmq"]["gatewayId"], cfg["rabbitmq"]["sendFrom"], cfg["rabbitmq"]["exchange"], cfg["rabbitmq"]["publish_interval"])
+    if not os.path.isdir(os.path.dirname(log_path)):
+        os.makedirs(os.path.dirname(log_path))
+
+    logging.basicConfig(filename=args.log_path+"/publisher.log",level=logging.DEBUG,format='%(asctime)s %(message)s')
+
+    publisher = Publisher(args.amqp_url+'/%2F?connection_attempts=10&heartbeat_interval=3600', args.gatewayId, args.sendFrom, args.exchange, args.publish_interval)
     publisher.run()
 
 

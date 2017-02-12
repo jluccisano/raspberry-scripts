@@ -1,7 +1,0 @@
-rabbitmq:
-    url: YOUR_AMQP_URL
-    gatewayId: YOUR_GATEWAY_ID
-    sendFrom: YOUR_SENDFROM
-    exchange: YOUR_EXCHANGE
-    publish_interval: YOUR_PUBLISH_INTERVAL
-    queue: YOUR_QUEUE_NAME
