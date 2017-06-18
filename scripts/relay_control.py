@@ -3,7 +3,14 @@ import RPi.GPIO as GPIO
 
 GPIO.setmode(GPIO.BOARD)
 
-relayIO = { "1": 15, "2": 16, "3": 17, "4": 18, "5": 19}
+# GPIO/BOARD | Relay IN | Rotors | Zone
+# 22/15	     | R2 IN2   | 1      | B
+# 18/12	     | R1 IN2   | 2      | A
+# 24/18	     | R1 IN3   | 3      | D
+# 17/11	     | R1 IN4   | 4      | C
+# 27/13	     | R2 IN1   | 5      | E
+
+relayIO = { "1": 15, "2": 2, "3": 18, "4": 11, "5": 13}
 
 def setState(relay, state):
 	GPIO.output(relayIO[relay], state)
