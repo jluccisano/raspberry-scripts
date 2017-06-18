@@ -14,6 +14,7 @@ GPIO.setmode(GPIO.BOARD)
 relayIO = { "1": 15, "2": 12, "3": 18, "4": 11, "5": 13}
 
 def setState(relay, state):
+	print("Trying to set relay: " + int(relayIO[relay]) + " to state: " + bool(state))
 	GPIO.output(int(relayIO[relay]), bool(state))
 
 	if getState(relay) != state:
