@@ -10,7 +10,7 @@ GPIO.setmode(GPIO.BOARD)
 # 17/11	     | R1 IN4   | 4      | C
 # 27/13	     | R2 IN1   | 5      | E
 
-relayIO = { "1": 15, "2": 2, "3": 18, "4": 11, "5": 13}
+relayIO = { "1": 15, "2": 12, "3": 18, "4": 11, "5": 13}
 
 def setState(relay, state):
 	GPIO.output(relayIO[relay], state)
