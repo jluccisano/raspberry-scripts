@@ -2,6 +2,7 @@
 import RPi.GPIO as GPIO
 import argparse
 
+GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
 
 # GPIO/BOARD | Relay IN | Rotors | Zone
@@ -13,14 +14,20 @@ GPIO.setmode(GPIO.BOARD)
 
 relayIO = { "1": 15, "2": 12, "3": 18, "4": 11, "5": 13}
 
+GPIO.setup(relayIO["1"], GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(relayIO["2"], GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(relayIO["3"], GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(relayIO["4"], GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(relayIO["5"], GPIO.OUT, initial=GPIO.LOW)
+
 def setState(relay, state):
-	print("Trying to set relay: " + int(relayIO[relay]) + " to state: " + bool(state))
-	GPIO.output(int(relayIO[relay]), bool(state))
-
+	print("Trying to set relay: " + str(relayIO[relay]) + " to state: " + state)
+	GPIO.output(relayIO[relay], int(state))
+       
 	if getState(relay) != state:
-		print("relay: " + relay + "is not set to " + state)
+		print("relay: " + relay + " is not set to " + state)
 
-	print("relay: " + relay + "is set to " + getState(relay))
+	print("relay: " + relay + " is set to " + str(getState(relay)))
 
 def getState(relay):
 	return GPIO.input(int(relayIO[relay]))
