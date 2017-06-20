@@ -13,6 +13,12 @@ GPIO.setmode(GPIO.BOARD)
 
 relayIO = { "1": 15, "2": 12, "3": 18, "4": 11, "5": 13}
 
+GPIO.setup(relayIO["1"], GPIO.OUT)
+GPIO.setup(relayIO["2"], GPIO.OUT)
+GPIO.setup(relayIO["3"], GPIO.OUT)
+GPIO.setup(relayIO["4"], GPIO.OUT)
+GPIO.setup(relayIO["5"], GPIO.OUT)
+
 def getState(relay):
     return GPIO.input(int(relayIO[relay]))
 
