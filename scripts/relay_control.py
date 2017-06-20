@@ -33,7 +33,13 @@ def setAll(state):
 	chan_list = []
 	for relay in relayIO:
     		chan_list.append(relayIO[relay])		
-	GPIO.output(chan_list, int(state))  
+	GPIO.output(chan_list, int(state))
+
+def getAll():
+	chan_list = []
+	for relay in relayIO:
+    		chan_list.append(relayIO[relay])
+	GPIO.setup(chan_list, GPIO.OUT)
 	
 def main():
     parser = argparse.ArgumentParser()
