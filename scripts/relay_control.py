@@ -15,8 +15,6 @@ GPIO.setmode(GPIO.BOARD)
 relayIO = { "1": 15, "2": 12, "3": 18, "4": 11, "5": 13}
 
 def setState(relay, state):
-	GPIO.setup(relayIO[relay], GPIO.OUT)
-	
 	print("Trying to set relay: " + str(relayIO[relay]) + " to state: " + state)
 	GPIO.output(relayIO[relay], int(state))
        
@@ -25,15 +23,25 @@ def setState(relay, state):
 
 	print("relay: " + relay + " is set to " + str(getState(relay)))
 
+def toggle(relay):
+	GPIO.output(relayIO[relay], not GPIO.input(relayIO[relay]))
+	
 def getState(relay):
 	return GPIO.input(int(relayIO[relay]))
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--relay', help='Set relay 1/2/3/4/5', required=True)
-    parser.add_argument('--state',help='Set state high=1 or low=0', required=True)
+    parser.add_argument('--state',help='Set state high=1 or low=0', required=false)
+    parser.add_argument('--toggle',help='Toggle state', required=false)
     args = parser.parse_args()
-    setState(args.relay, args.state)
+    GPIO.setup(relayIO[relay], GPIO.OUT)
+    
+    if args.toggle:
+	toggle(args.relay)
+    elif args.state:
+	setState(args.relay, args.state)
+
     GPIO.cleanup()
 
 if __name__ == '__main__':
