@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import RPi.GPIO as GPIO
+import argparse
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
@@ -23,12 +24,11 @@ def getState(relay):
     return GPIO.input(int(relayIO[relay]))
 
 def main():
-    print "relay 1: " + str(getState("1"))
-    print "relay 2: " + str(getState("2"))
-    print "relay 3: " + str(getState("3"))
-    print "relay 4: " + str(getState("4"))
-    print "relay 5: " + str(getState("5"))
-
-
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--relay', help='Get relay 1/2/3/4/5', required=True)
+    args = parser.parse_args()
+    print "relay: " + args.relay + str(getState(args.relay))
+    GPIO.cleanup()
+    
 if __name__ == '__main__':
     main()
