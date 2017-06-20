@@ -14,13 +14,9 @@ GPIO.setmode(GPIO.BOARD)
 
 relayIO = { "1": 15, "2": 12, "3": 18, "4": 11, "5": 13}
 
-GPIO.setup(relayIO["1"], GPIO.OUT, initial=GPIO.HIGH)
-GPIO.setup(relayIO["2"], GPIO.OUT, initial=GPIO.HIGH)
-GPIO.setup(relayIO["3"], GPIO.OUT, initial=GPIO.HIGH)
-GPIO.setup(relayIO["4"], GPIO.OUT, initial=GPIO.HIGH)
-GPIO.setup(relayIO["5"], GPIO.OUT, initial=GPIO.HIGH)
-
 def setState(relay, state):
+	GPIO.setup(relayIO[relay], GPIO.OUT)
+	
 	print("Trying to set relay: " + str(relayIO[relay]) + " to state: " + state)
 	GPIO.output(relayIO[relay], int(state))
        
@@ -35,12 +31,14 @@ def getState(relay):
 def main():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--relay', help='Set relay 1/2/3/4/5', required=True)
-    parser.add_argument('--state',help='Set state high=1 or low=0', required=True)
+    parser.add_argument('-r', help='Set relay 1/2/3/4/5', required=True)
+    parser.add_argument('-s',help='Set state high=1 or low=0', required=True)
 
     args = parser.parse_args()
 
     setState(args.relay, args.state)
+    
+    GPIO.cleanup()
 
 if __name__ == '__main__':
     main()
