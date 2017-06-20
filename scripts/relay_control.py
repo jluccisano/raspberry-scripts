@@ -29,15 +29,11 @@ def getState(relay):
 	return GPIO.input(int(relayIO[relay]))
 
 def main():
-
     parser = argparse.ArgumentParser()
-    parser.add_argument('-r', help='Set relay 1/2/3/4/5', required=True)
-    parser.add_argument('-s',help='Set state high=1 or low=0', required=True)
-
+    parser.add_argument('--relay', help='Set relay 1/2/3/4/5', required=True)
+    parser.add_argument('--state',help='Set state high=1 or low=0', required=True)
     args = parser.parse_args()
-
     setState(args.relay, args.state)
-    
     GPIO.cleanup()
 
 if __name__ == '__main__':
