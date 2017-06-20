@@ -14,11 +14,11 @@ GPIO.setmode(GPIO.BOARD)
 
 relayIO = { "1": 15, "2": 12, "3": 18, "4": 11, "5": 13}
 
-GPIO.setup(relayIO["1"], GPIO.OUT, initial=GPIO.LOW)
-GPIO.setup(relayIO["2"], GPIO.OUT, initial=GPIO.LOW)
-GPIO.setup(relayIO["3"], GPIO.OUT, initial=GPIO.LOW)
-GPIO.setup(relayIO["4"], GPIO.OUT, initial=GPIO.LOW)
-GPIO.setup(relayIO["5"], GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(relayIO["1"], GPIO.OUT, initial=GPIO.HIGH)
+GPIO.setup(relayIO["2"], GPIO.OUT, initial=GPIO.HIGH)
+GPIO.setup(relayIO["3"], GPIO.OUT, initial=GPIO.HIGH)
+GPIO.setup(relayIO["4"], GPIO.OUT, initial=GPIO.HIGH)
+GPIO.setup(relayIO["5"], GPIO.OUT, initial=GPIO.HIGH)
 
 def setState(relay, state):
 	print("Trying to set relay: " + str(relayIO[relay]) + " to state: " + state)
