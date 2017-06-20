@@ -22,7 +22,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--relay', help='Get relay 1/2/3/4/5', required=True)
     args = parser.parse_args()
-    print "relay: " + args.relay + str(getState(args.relay))
+    print "relay: " + args.relay + ", state: " + str(getState(args.relay))
     GPIO.cleanup()
     
 if __name__ == '__main__':
