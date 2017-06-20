@@ -23,11 +23,11 @@ def getState(relay):
     return GPIO.input(int(relayIO[relay]))
 
 def main():
-    print "relay 1: " + getState("1")
-    print "relay 2: " + getState("2")
-    print "relay 3: " + getState("3")
-    print "relay 4: " + getState("4")
-    print "relay 5: " + getState("5")
+    print "relay 1: " + str(getState("1"))
+    print "relay 2: " + str(getState("2"))
+    print "relay 3: " + str(getState("3"))
+    print "relay 4: " + str(getState("4"))
+    print "relay 5: " + str(getState("5"))
 
 
 if __name__ == '__main__':
