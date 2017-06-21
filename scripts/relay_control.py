@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import RPi.GPIO as GPIO
 import argparse
+import sys
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
