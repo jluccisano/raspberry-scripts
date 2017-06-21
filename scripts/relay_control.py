@@ -26,7 +26,7 @@ def setState(relay, state):
 	if args.relay == "*":
 		print 'Set all relay to state=%s' % args.state
 		setAll(args.state)
-	elif:
+	else:
 		print 'Set relay=%s to state=%s' % args.relay, args.state
 		GPIO.setup(relayIO[relay], GPIO.OUT)
 		GPIO.output(relayIO[relay], int(state))       
@@ -57,7 +57,7 @@ def getState(relay):
 	if args.relay == "*":
 		print 'Get all relay state'
 		state = getAll()
-	elif:
+	else:
 		print 'Get relay=%s' % args.relay
 		GPIO.setup(relayIO[relay], GPIO.OUT)
 		state = GPIO.input(int(relayIO[relay]))
@@ -85,7 +85,7 @@ def getAll():
 	
 def main():
 	
-    parser = argparse.ArgumentParser(
+    	parser = argparse.ArgumentParser(
             description='Relay control',
             usage='''relay <command> [<args>]
 	The most commonly used relay commands are:
