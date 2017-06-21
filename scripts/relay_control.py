@@ -56,11 +56,11 @@ class RelayControl(object):
 
 		if args.relay == "*":
 			print 'Get all relay state'
-			print 'states=' + getAll()
+			print 'states=' + str(getAll())
 		else:
 			print 'Get relay=%s' % args.relay
 			GPIO.setup(self.relayIO[args.relay], GPIO.OUT)
-			print 'state=' + GPIO.input(int(self.relayIO[args.relay]))
+			print 'state=' + str(GPIO.input(int(self.relayIO[args.relay])))
 			GPIO.cleanup()
 
 	def setAll(self, state):
