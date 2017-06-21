@@ -15,56 +15,94 @@ GPIO.setmode(GPIO.BOARD)
 relayIO = { "1": 15, "2": 12, "3": 18, "4": 11, "5": 13}
 
 def setState(relay, state):
-	GPIO.setup(relayIO[relay], GPIO.OUT)
-	print("Trying to set relay: " + str(relayIO[relay]) + " to state: " + state)
-	GPIO.output(relayIO[relay], int(state))
-       
-	if getState(relay) != state:
-		print("relay: " + relay + " is not set to " + state)
+	parser = argparse.ArgumentParser(
+            description='Set relay state high=1 or low=0')
+	
+        parser.add_argument('--relay', help='Set relay 1/2/3/4/5 or *', required=False)
+	parser.add_argument('--state',help='Set state high=1 or low=0', required=False)
 
-	print("relay: " + relay + " is set to " + str(getState(relay)))
-
+	args = parser.parse_args(sys.argv[2:])
+	
+	if args.relay == "*":
+		print 'Set all relay to state=%s' % args.state
+		setAll(args.state)
+	elif:
+		print 'Set relay=%s to state=%s' % args.relay, args.state
+		GPIO.setup(relayIO[relay], GPIO.OUT)
+		GPIO.output(relayIO[relay], int(state))       
+		GPIO.cleanup()
+ 
 def toggle(relay):
+	parser = argparse.ArgumentParser(
+            description='Toggle relay value')
+	
+	parser.add_argument('--relay', help='Set relay 1/2/3/4/5', required=False)
+
+	args = parser.parse_args(sys.argv[2:])
+        print 'Toggle relay=%s' % args.relay
+	
 	GPIO.setup(relayIO[relay], GPIO.OUT)
 	GPIO.output(relayIO[relay], not GPIO.input(relayIO[relay]))
+	GPIO.cleanup()
 	
 def getState(relay):
-	GPIO.setup(relayIO[relay], GPIO.OUT)
-	return GPIO.input(int(relayIO[relay]))
-
+	state = une
+	parser = argparse.ArgumentParser(
+            description='Set relay state high=1 or low=0')
+	
+        parser.add_argument('--relay', help='Set relay 1/2/3/4/5 or *', required=False)
+	
+	args = parser.parse_args(sys.argv[2:])
+	
+	if args.relay == "*":
+		print 'Get all relay state'
+		state = getAll()
+	elif:
+		print 'Get relay=%s' % args.relay
+		GPIO.setup(relayIO[relay], GPIO.OUT)
+		state = GPIO.input(int(relayIO[relay]))
+		GPIO.cleanup()
+	return state
+	
 def setAll(state):
 	chan_list = []
 	for relay in relayIO:
     		chan_list.append(relayIO[relay])
 	GPIO.setup(chan_list, GPIO.OUT)
 	GPIO.output(chan_list, int(state))
+	GPIO.cleanup()
 
 def getAll():
 	chan_list = []
+	state_list = []
 	for relay in relayIO:
     		chan_list.append(relayIO[relay])
 	GPIO.setup(chan_list, GPIO.OUT)
+	for relay in relayIO:
+		state_list.append(GPIO.input(int(relayIO[relay])))
+	GPIO.cleanup()
+	return state_list
 	
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--relay', help='Set relay 1/2/3/4/5', required=False)
-    parser.add_argument('--state',help='Set state high=1 or low=0', required=False)
-    parser.add_argument('--toggle',help='Toggle state', required=False)
-    parser.add_argument('--info',help='Get state high=1 or low=0', required=False)
-    parser.add_argument('--all',help='Set all to state high=1 or low=0', required=False)
-
-    args = parser.parse_args()
-    
-    if args.toggle:
-	toggle(args.relay)
-    elif args.state:
-	setState(args.relay, args.state)
-    elif args.info:
-	getState(args.relay)
-    elif args.all:
-	setAll(args.all)
-
-    GPIO.cleanup()
-
+	
+    parser = argparse.ArgumentParser(
+            description='Relay control',
+            usage='''relay <command> [<args>]
+	The most commonly used relay commands are:
+	   set     Set relay value high or low
+	   get     Get relay value high or low
+	   toggle  Toggle relay value
+	''')
+        parser.add_argument('command', help='Subcommand to run')
+        # parse_args defaults to [1:] for args, but you need to
+        # exclude the rest of the args too, or validation will fail
+        args = parser.parse_args(sys.argv[1:2])
+        if not hasattr(self, args.command):
+            print 'Unrecognized command'
+            parser.print_help()
+            exit(1)
+        # use dispatch pattern to invoke method with same name
+        getattr(self, args.command)()
+	
 if __name__ == '__main__':
     main()
