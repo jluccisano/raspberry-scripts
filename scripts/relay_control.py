@@ -35,7 +35,8 @@ def getState(relay):
 def setAll(state):
 	chan_list = []
 	for relay in relayIO:
-    		chan_list.append(relayIO[relay])		
+    		chan_list.append(relayIO[relay])
+	GPIO.setup(chan_list, GPIO.OUT)
 	GPIO.output(chan_list, int(state))
 
 def getAll():
