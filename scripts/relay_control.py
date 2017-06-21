@@ -60,8 +60,8 @@ def main():
 	setState(args.relay, args.state)
     elif args.info:
 	getState(args.relay)
-    elif args.all and args.state:
-	setAll(args.state)
+    elif args.all:
+	setAll(args.all)
 
     GPIO.cleanup()
 
