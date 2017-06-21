@@ -49,7 +49,6 @@ class RelayControl(object):
 		GPIO.cleanup()
 
 	def get(relay):
-		state = une
 		parser = argparse.ArgumentParser(
 		    description='Set relay state high=1 or low=0')
 
