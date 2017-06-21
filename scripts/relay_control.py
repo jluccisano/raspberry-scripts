@@ -93,16 +93,16 @@ def main():
 	   get     Get relay value high or low
 	   toggle  Toggle relay value
 	''')
-        parser.add_argument('command', help='Subcommand to run')
-        # parse_args defaults to [1:] for args, but you need to
-        # exclude the rest of the args too, or validation will fail
-        args = parser.parse_args(sys.argv[1:2])
-        if not hasattr(self, args.command):
-            print 'Unrecognized command'
-            parser.print_help()
-            exit(1)
-        # use dispatch pattern to invoke method with same name
-        getattr(self, args.command)()
+	parser.add_argument('command', help='Subcommand to run')
+	# parse_args defaults to [1:] for args, but you need to
+	# exclude the rest of the args too, or validation will fail
+	args = parser.parse_args(sys.argv[1:2])
+	if not hasattr(self, args.command):
+	    print 'Unrecognized command'
+	    parser.print_help()
+	    exit(1)
+	# use dispatch pattern to invoke method with same name
+	getattr(self, args.command)()
 	
 if __name__ == '__main__':
     main()
