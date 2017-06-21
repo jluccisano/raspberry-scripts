@@ -84,8 +84,7 @@ def getAll():
 	GPIO.cleanup()
 	return state_list
 	
-def main():
-	
+def main(self):
     	parser = argparse.ArgumentParser(
             description='Relay control',
             usage='''relay <command> [<args>]
