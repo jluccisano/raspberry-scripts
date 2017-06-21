@@ -43,7 +43,7 @@ def getAll():
 	
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--relay', help='Set relay 1/2/3/4/5', required=True)
+    parser.add_argument('--relay', help='Set relay 1/2/3/4/5', required=false)
     parser.add_argument('--state',help='Set state high=1 or low=0', required=false)
     parser.add_argument('--toggle',help='Toggle state', required=false)
     parser.add_argument('--info',help='Get state high=1 or low=0', required=false)
