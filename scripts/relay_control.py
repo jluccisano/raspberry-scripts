@@ -13,8 +13,6 @@ GPIO.setmode(GPIO.BOARD)
 # 17/11	     | R1 IN4   | 4      | C
 # 27/13	     | R2 IN1   | 5      | E
 
-relayIO = { "1": 15, "2": 12, "3": 18, "4": 11, "5": 13}
-
 class RelayControl(object):
 
 	def set(self, relay, state):
@@ -31,8 +29,8 @@ class RelayControl(object):
 			setAll(args.state)
 		else:
 			print 'Set relay=%s to state=%s' % args.relay, args.state
-			GPIO.setup(relayIO[relay], GPIO.OUT)
-			GPIO.output(relayIO[relay], int(state))       
+			GPIO.setup(self.relayIO[relay], GPIO.OUT)
+			GPIO.output(self.relayIO[relay], int(state))       
 			GPIO.cleanup()
 
 	def toggle(self, relay):
@@ -44,11 +42,11 @@ class RelayControl(object):
 		args = parser.parse_args(sys.argv[2:])
 		print 'Toggle relay=%s' % args.relay
 
-		GPIO.setup(relayIO[relay], GPIO.OUT)
-		GPIO.output(relayIO[relay], not GPIO.input(relayIO[relay]))
+		GPIO.setup(self.relayIO[relay], GPIO.OUT)
+		GPIO.output(self.relayIO[relay], not GPIO.input(self.relayIO[relay]))
 		GPIO.cleanup()
 
-	def get(relay):
+	def get(self, relay):
 		parser = argparse.ArgumentParser(
 		    description='Set relay state high=1 or low=0')
 
@@ -61,15 +59,15 @@ class RelayControl(object):
 			state = getAll()
 		else:
 			print 'Get relay=%s' % args.relay
-			GPIO.setup(relayIO[relay], GPIO.OUT)
-			state = GPIO.input(int(relayIO[relay]))
+			GPIO.setup(self.relayIO[relay], GPIO.OUT)
+			state = GPIO.input(int(self.relayIO[relay]))
 			GPIO.cleanup()
 		return state
 
-	def setAll(state):
+	def setAll(self, state):
 		chan_list = []
-		for relay in relayIO:
-			chan_list.append(relayIO[relay])
+		for relay in self.relayIO:
+			chan_list.append(self.relayIO[relay])
 		GPIO.setup(chan_list, GPIO.OUT)
 		GPIO.output(chan_list, int(state))
 		GPIO.cleanup()
@@ -77,15 +75,18 @@ class RelayControl(object):
 	def getAll():
 		chan_list = []
 		state_list = []
-		for relay in relayIO:
-			chan_list.append(relayIO[relay])
+		for relay in self.relayIO:
+			chan_list.append(self.relayIO[relay])
 		GPIO.setup(chan_list, GPIO.OUT)
-		for relay in relayIO:
-			state_list.append(GPIO.input(int(relayIO[relay])))
+		for relay in self.relayIO:
+			state_list.append(GPIO.input(int(self.relayIO[relay])))
 		GPIO.cleanup()
 		return state_list
 
 	def __init__(self):
+		
+		self.relayIO = { "1": 15, "2": 12, "3": 18, "4": 11, "5": 13}
+		
 		parser = argparse.ArgumentParser(
 		    description='Relay control',
 		    usage='''relay <command> [<args>]
