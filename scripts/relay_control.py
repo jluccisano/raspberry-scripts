@@ -17,7 +17,7 @@ relayIO = { "1": 15, "2": 12, "3": 18, "4": 11, "5": 13}
 
 class RelayControl(object):
 
-	def setState(relay, state):
+	def set(self, relay, state):
 		parser = argparse.ArgumentParser(
 		    description='Set relay state high=1 or low=0')
 
@@ -35,7 +35,7 @@ class RelayControl(object):
 			GPIO.output(relayIO[relay], int(state))       
 			GPIO.cleanup()
 
-	def toggle(relay):
+	def toggle(self, relay):
 		parser = argparse.ArgumentParser(
 		    description='Toggle relay value')
 
@@ -48,7 +48,7 @@ class RelayControl(object):
 		GPIO.output(relayIO[relay], not GPIO.input(relayIO[relay]))
 		GPIO.cleanup()
 
-	def getState(relay):
+	def get(relay):
 		state = une
 		parser = argparse.ArgumentParser(
 		    description='Set relay state high=1 or low=0')
