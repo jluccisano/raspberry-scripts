@@ -56,13 +56,12 @@ class RelayControl(object):
 
 		if args.relay == "*":
 			print 'Get all relay state'
-			state = getAll()
+			print 'states=' + getAll()
 		else:
 			print 'Get relay=%s' % args.relay
 			GPIO.setup(self.relayIO[args.relay], GPIO.OUT)
-			state = GPIO.input(int(self.relayIO[args.relay]))
+			print 'state=' + GPIO.input(int(self.relayIO[args.relay]))
 			GPIO.cleanup()
-		return state
 
 	def setAll(self, state):
 		chan_list = []
