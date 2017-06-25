@@ -46,6 +46,17 @@ class RelayControl(object):
 		GPIO.output(self.relayIO[args.relay], not GPIO.input(self.relayIO[args.relay]))
 		GPIO.cleanup()
 
+	def getAll(self):
+		chan_list = []
+		state_list = []
+		for relay in self.relayIO:
+			chan_list.append(self.relayIO[relay])
+		GPIO.setup(chan_list, GPIO.OUT)
+		for relay in self.relayIO:
+			state_list.append(GPIO.input(int(self.relayIO[relay])))
+		GPIO.cleanup()
+		return state_list
+
 	def get(self):
 		parser = argparse.ArgumentParser(
 		    description='Set relay state high=1 or low=0')
@@ -71,17 +82,6 @@ class RelayControl(object):
 		GPIO.setup(chan_list, GPIO.OUT)
 		GPIO.output(chan_list, int(state))
 		GPIO.cleanup()
-
-	def getAll(self):
-		chan_list = []
-		state_list = []
-		for relay in self.relayIO:
-			chan_list.append(self.relayIO[relay])
-		GPIO.setup(chan_list, GPIO.OUT)
-		for relay in self.relayIO:
-			state_list.append(GPIO.input(int(self.relayIO[relay])))
-		GPIO.cleanup()
-		return state_list
 
 	def __init__(self):
 		
