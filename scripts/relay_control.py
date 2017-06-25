@@ -25,7 +25,7 @@ class RelayControl(object):
 		args = parser.parse_args(sys.argv[2:])
 
 		if args.relay:
-			print 'Set relay=%s to state=%s' % { args.relay, args.state }
+			print 'Set relay=%(relay)s to state=%(state)s' % { relay: args.relay, state: args.state }
 			GPIO.setup(self.relayIO[args.relay], GPIO.OUT)
 			GPIO.output(self.relayIO[args.relay], int(args.state))       
 			GPIO.cleanup()
