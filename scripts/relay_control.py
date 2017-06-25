@@ -24,15 +24,15 @@ class RelayControl(object):
 
 		args = parser.parse_args(sys.argv[2:])
 
-		if args.relay == "*":
-			print 'Set all relay to state=%s' % args.state
-			setAll(args.state)
-		else:
+		if args.relay:
 			print 'Set relay=%s to state=%s' % args.relay, args.state
 			GPIO.setup(self.relayIO[args.relay], GPIO.OUT)
 			GPIO.output(self.relayIO[args.relay], int(args.state))       
 			GPIO.cleanup()
-
+		else:
+			print 'Set all relay to state=%s' % args.state
+			self.setAll(args.state)
+			
 	def toggle(self):
 		parser = argparse.ArgumentParser(
 		    description='Toggle relay value')
@@ -45,17 +45,6 @@ class RelayControl(object):
 		GPIO.setup(self.relayIO[args.relay], GPIO.OUT)
 		GPIO.output(self.relayIO[args.relay], not GPIO.input(self.relayIO[args.relay]))
 		GPIO.cleanup()
-
-	def getAll(self):
-		chan_list = []
-		state_list = []
-		for relay in self.relayIO:
-			chan_list.append(self.relayIO[relay])
-		GPIO.setup(chan_list, GPIO.OUT)
-		for relay in self.relayIO:
-			state_list.append(GPIO.input(int(self.relayIO[relay])))
-		GPIO.cleanup()
-		return state_list
 
 	def get(self):
 		parser = argparse.ArgumentParser(
@@ -73,7 +62,17 @@ class RelayControl(object):
 		else:
 			print 'Get all relay state'
 			print 'states=' + str(self.getAll())
-			
+
+	def getAll(self):
+		chan_list = []
+		state_list = []
+		for relay in self.relayIO:
+			chan_list.append(self.relayIO[relay])
+		GPIO.setup(chan_list, GPIO.OUT)
+		for relay in self.relayIO:
+			state_list.append(GPIO.input(int(self.relayIO[relay])))
+		GPIO.cleanup()
+		return state_list
 
 	def setAll(self, state):
 		chan_list = []
