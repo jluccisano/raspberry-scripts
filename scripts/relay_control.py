@@ -72,7 +72,7 @@ class RelayControl(object):
 			GPIO.cleanup()
 		else:
 			print 'Get all relay state'
-			print 'states=' + str(getAll())
+			print 'states=' + str(self.getAll())
 			
 
 	def setAll(self, state):
