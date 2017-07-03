@@ -9,7 +9,7 @@ GPIO.setmode(GPIO.BOARD)
 # GPIO/BOARD | Relay IN | Rotors | Zone
 # 22/15	     | R2 IN2   | 1      | B
 # 18/12	     | R1 IN2   | 2      | A
-# 24/18	     | R1 IN3   | 3      | D
+# 23/16	     | R1 IN3   | 3      | D
 # 17/11	     | R1 IN4   | 4      | C
 # 27/13	     | R2 IN1   | 5      | E
 
@@ -28,7 +28,6 @@ class RelayControl(object):
 			print 'Set relay=%(0)s to state=%(1)s' % { '0' : args.relay, '1' : args.state }
 			GPIO.setup(self.relayIO[args.relay], GPIO.OUT)
 			GPIO.output(self.relayIO[args.relay], int(args.state))       
-			GPIO.cleanup()
 		else:
 			print 'Set all relay to state=%s' % args.state
 			self.setAll(args.state)
@@ -44,7 +43,6 @@ class RelayControl(object):
 
 		GPIO.setup(self.relayIO[args.relay], GPIO.OUT)
 		GPIO.output(self.relayIO[args.relay], not GPIO.input(self.relayIO[args.relay]))
-		GPIO.cleanup()
 
 	def get(self):
 		parser = argparse.ArgumentParser(
@@ -58,7 +56,6 @@ class RelayControl(object):
 			print 'Get relay=%s' % args.relay
 			GPIO.setup(self.relayIO[args.relay], GPIO.OUT)
 			print 'state=' + str(GPIO.input(int(self.relayIO[args.relay])))
-			GPIO.cleanup()
 		else:
 			print 'Get all relay state'
 			print 'states=' + str(self.getAll())
@@ -71,7 +68,6 @@ class RelayControl(object):
 		GPIO.setup(chan_list, GPIO.OUT)
 		for relay in self.relayIO:
 			state_list.append(GPIO.input(int(self.relayIO[relay])))
-		GPIO.cleanup()
 		return state_list
 
 	def setAll(self, state):
@@ -80,11 +76,10 @@ class RelayControl(object):
 			chan_list.append(self.relayIO[relay])
 		GPIO.setup(chan_list, GPIO.OUT)
 		GPIO.output(chan_list, int(state))
-		GPIO.cleanup()
 
 	def __init__(self):
 		
-		self.relayIO = { "1": 15, "2": 12, "3": 18, "4": 11, "5": 13}
+		self.relayIO = { "1": 15, "2": 12, "3": 16, "4": 11, "5": 13}
 		
 		parser = argparse.ArgumentParser(
 		    description='Relay control',
