@@ -1,37 +1,64 @@
 package main
 
 import (
-   "os/exec"
-   "fmt"
-   "github.com/ungerik/go-rest"
+	"fmt"
+	"github.com/ungerik/go-rest"
+	"net/url"
+	"os/exec"
 )
 
 func main() {
-    fmt.Println("Hello, Arch!")
-
-     rest.DontCheckRequestMethod = true
-	rest.IndentJSON = "  "
-
 	// See RunServer below
 	stopServerChan := make(chan struct{})
 
-	rest.HandleGET("/test", func() string {
-		return "ici!"
-	})
-	
-	rest.HandleGET("/get", func(params url.Values) (string, error) {
-		v := params.Get("relay")
-		if v == "" {
-			return nil, errors.New("Expecting GET parameter 'relay'")
+	fmt.Printf("Starting REST server\n")
+
+	rest.HandleGET("/get", func(in url.Values)  string {
+		args := []string{"get"}
+		fmt.Println(in)
+		if in.Get("relay") != "" {
+                        args = append(args,"--relay")
+			args = append(args,(fmt.Sprintf("%s", in.Get("relay"))))
 		}
-		cmd := exec.Command("python",  "relay_control.py", "get", "--relay 1")
-		fmt.Println(cmd.Args)
-		out, err := cmd.CombinedOutput()
-		if err != nil { fmt.Println(err); }
-		fmt.Println(string(out))
-		return "value = " + string(out), nil
+		fmt.Println(args)
+		cmd := exec.Command("./relay_control.py", args...)
+		out, err := cmd.Output()
+
+		if err != nil {
+			println(err.Error())
+			return ""
+		}
+
+		return fmt.Sprintf(string(out))
 	})
 
-        rest.RunServer("0.0.0.0:8080", stopServerChan)
+	rest.HandlePOST("/set", func(in url.Values)  string {
+		if in.Get("state") == "" {
+			println("State param is mandatory.")
+			return ""
+		}
+		fmt.Println(in)
+		args := []string{"set","--state", fmt.Sprintf("%s", in.Get("state"))}
+		if in.Get("relay") != "" {
+			args = append(args,"--relay")
+			args = append(args, fmt.Sprintf("%s", in.Get("relay")))
+		}
+		fmt.Println(args)
+		cmd := exec.Command("./relay_control.py", args...)
+		out, err := cmd.Output()
 
+		if err != nil {
+			println(err.Error())
+			return ""
+		}
+
+		return fmt.Sprintf(string(out))
+	})
+
+	rest.HandleGET("/close", func() string {
+		stopServerChan <- struct{}{}
+		return "Stopping REST server..."
+	})
+
+	rest.RunServer("0.0.0.0:8080", stopServerChan)
 }

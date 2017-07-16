@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 import RPi.GPIO as GPIO
 import argparse
 import sys
