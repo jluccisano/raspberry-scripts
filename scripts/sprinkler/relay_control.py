@@ -82,10 +82,8 @@ class RelayControl(object):
 	def __init__(self):
 
 		with open('data.json') as data_file:
-			data = json.load(data_file)
+			self.data = json.load(data_file)
 
-		self.data = { "1": 15, "2": 12, "3": 16, "4": 11, "5": 13}
-		
 		parser = argparse.ArgumentParser(
 		    description='Relay control',
 		    usage='''relay <command> [<args>]
