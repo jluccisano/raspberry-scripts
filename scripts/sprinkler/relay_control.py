@@ -2,6 +2,7 @@
 import RPi.GPIO as GPIO
 import argparse
 import sys
+import json
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
@@ -62,13 +63,14 @@ class RelayControl(object):
 
 	def getAll(self):
 		chan_list = []
-		state_list = []
-		for relay in self.relayIO:
-			chan_list.append(self.relayIO[relay])
+		for zone in self.data["zones"]:
+			chan_list.append(zone["relayIn"])
 		GPIO.setup(chan_list, GPIO.OUT)
-		for relay in self.relayIO:
-			state_list.append(GPIO.input(int(self.relayIO[relay])))
-		return state_list
+
+		for zone in self.data["zones"]:
+			zone["value"] =  GPIO.input(int(zone["relayIn"]))
+
+		return self.data["zones"]
 
 	def setAll(self, state):
 		chan_list = []
@@ -78,8 +80,11 @@ class RelayControl(object):
 		GPIO.output(chan_list, int(state))
 
 	def __init__(self):
-		
-		self.relayIO = { "1": 15, "2": 12, "3": 16, "4": 11, "5": 13}
+
+		with open('data.json') as data_file:
+			data = json.load(data_file)
+
+		self.data = { "1": 15, "2": 12, "3": 16, "4": 11, "5": 13}
 		
 		parser = argparse.ArgumentParser(
 		    description='Relay control',

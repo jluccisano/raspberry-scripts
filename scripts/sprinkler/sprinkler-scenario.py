@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #sudo pip install tqdm
-from statemachine import StateMachine
+from scripts.sprinkler.statemachine import StateMachine
 from time import sleep
 from tqdm import trange
 

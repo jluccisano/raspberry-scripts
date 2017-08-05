@@ -1,0 +1,60 @@
+/* GPIO/BOARD | Relay IN | Rotors | Zone
+# 22/15	     | R2 IN2   | 1      | B
+# 18/12	     | R1 IN2   | 2      | A
+# 23/16	     | R1 IN3   | 3      | D
+# 17/11	     | R1 IN4   | 4      | C
+# 27/13	     | R2 IN1   | 5      | E     */
+{
+  "zones": [
+    {
+      "id": 1,
+      "name": "Zone A",
+      "description": "",
+      "relay": 1,
+      "relayIn": 2,
+      "rotor": 2,
+      "gpioOut": 18,
+      "boardOut": 12
+    },
+    {
+      "id": 2,
+      "name": "Zone B",
+      "description": "",
+      "relay": 2,
+      "relayIn": 2,
+      "rotor": 1,
+      "gpioOut": 22,
+      "boardOut": 15
+    },
+    {
+      "id": 3,
+      "name": "Zone C",
+      "description": "",
+      "relay": 1,
+      "relayIn": 4,
+      "rotor": 4,
+      "gpioOut": 17,
+      "boardOut": 11
+    },
+    {
+      "id": 4,
+      "name": "Zone D",
+      "description": "",
+      "relay": 1,
+      "relayIn": 3,
+      "rotor": 3,
+      "gpioOut": 23,
+      "boardOut": 16
+    },
+    {
+      "id": 1,
+      "name": "Zone E",
+      "description": "Goutte à Goutte",
+      "relay": 2,
+      "relayIn": 1,
+      "rotor": 5,
+      "gpioOut": 27,
+      "boardOut": 13
+    }
+  ]
+}

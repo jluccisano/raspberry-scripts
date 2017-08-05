@@ -5,7 +5,7 @@ import datetime
 import json
 import logging
 import argparse
-import dht22
+from scripts.dht22 import dht22
 import os
 
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
