@@ -58,17 +58,17 @@ class RelayControl(object):
 			GPIO.setup(self.relayIO[args.relay], GPIO.OUT)
 			print 'state=' + str(GPIO.input(int(self.relayIO[args.relay])))
 		else:
-			print 'Get all relay state'
-			print 'states=' + str(self.getAll())
+                        print 'states=' + str(self.getAll())
+			
 
 	def getAll(self):
 		chan_list = []
 		for zone in self.data["zones"]:
-			chan_list.append(zone["relayIn"])
+			chan_list.append(zone["boardOut"])
 		GPIO.setup(chan_list, GPIO.OUT)
 
 		for zone in self.data["zones"]:
-			zone["value"] =  GPIO.input(int(zone["relayIn"]))
+			zone["value"] =  GPIO.input(int(zone["boardOut"]))
 
 		return self.data["zones"]
 
