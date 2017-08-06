@@ -58,7 +58,7 @@ class RelayControl(object):
 			GPIO.setup(self.relayIO[args.relay], GPIO.OUT)
 			print 'state=' + str(GPIO.input(int(self.relayIO[args.relay])))
 		else:
-                        print 'states=' + str(self.getAll())
+			print 'states=' + str(self.getAll())
 			
 
 	def getAll(self):
@@ -97,11 +97,11 @@ class RelayControl(object):
 		# exclude the rest of the args too, or validation will fail
 		args = parser.parse_args(sys.argv[1:2])
 		if not hasattr(self, args.command):
-		    print 'Unrecognized command'
-		    parser.print_help()
-		    exit(1)
+			print 'Unrecognized command'
+			parser.print_help()
+			exit(1)
 		# use dispatch pattern to invoke method with same name
 		getattr(self, args.command)()
 	
 if __name__ == '__main__':
-    RelayControl()
+	RelayControl()
