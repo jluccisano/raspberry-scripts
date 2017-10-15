@@ -3,6 +3,7 @@ import RPi.GPIO as GPIO
 import argparse
 import sys
 import json
+import time
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
@@ -89,6 +90,45 @@ class ZoneControl(object):
 		GPIO.output(chan_list, int(state))
                 print self.getAll()
 
+        def setZone(self, zoneId, state):
+            for zone in self.data['zones']:
+                if zone['id']==int(zoneId):
+                    GPIO.setup(zone['boardOut'], GPIO.OUT)
+                    GPIO.output(zone['boardOut'],int(state))
+
+        def runStep(self, zone, duration, description):
+            print description
+            print zone
+            self.setZone(zone, 0)
+            time.sleep(float(duration))
+            self.setZone(zone, 1)
+
+        def scenario(self):
+            parser = argparse.ArgumentParser(
+                    description='Set a json file')
+
+            parser.add_argument('--json', help="[{ 'duration':10, 'zone':1, 'description':'Zone A'}...]", required=True)
+            
+            args = parser.parse_args(sys.argv[2:])
+
+            print 'start run scenario'
+
+            with open(args.json) as scenario_file:
+                self.scenario = json.load(scenario_file)
+
+            try:
+                for step in self.scenario:
+                        print step
+                        self.runStep(step['zone'], step['duration'], step['description'])
+            except KeyboardInterrupt:
+                self.reset()
+                sys.exit(0)
+            
+            print 'finish scenario'
+
+        def reset(self):
+            self.setAll(1)
+
 	def __init__(self):
 
 		with open('data.json') as data_file:
@@ -101,6 +141,8 @@ class ZoneControl(object):
 		   set     Set zone value high or low
 		   get     Get zone value high or low
 		   toggle  Toggle zone value
+		   reset Turn off all zones
+                   scenario Run a scenario from json
 		''')
 		parser.add_argument('command', help='Subcommand to run')
 		# parse_args defaults to [1:] for args, but you need to

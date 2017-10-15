@@ -1,0 +1,10 @@
+[{
+	"duration": "10",
+	"zone": "1",
+	"description": "Zone A"
+},
+{
+	"duration": "10",
+	"zone": "2",
+	"description": "Zone B"
+}]
