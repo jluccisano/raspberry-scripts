@@ -1,10 +1,15 @@
 [{
-	"duration": "10",
+	"duration": "300",
 	"zone": "1",
 	"description": "Zone A"
 },
 {
-	"duration": "10",
+	"duration": "300",
 	"zone": "2",
 	"description": "Zone B"
+},
+{
+	"duration": "300",
+	"zone": "3",
+	"description": "Zone C"
 }]
