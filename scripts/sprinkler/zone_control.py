@@ -4,6 +4,7 @@ import argparse
 import sys
 import json
 import time
+from tqdm import tqdm
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
@@ -100,7 +101,9 @@ class ZoneControl(object):
             print description
             print zone
             self.setZone(zone, 0)
-            time.sleep(float(duration))
+            interval = float(duration) / 100
+            for i in tqdm(range(100)):
+                time.sleep(interval)
             self.setZone(zone, 1)
 
         def scenario(self):
