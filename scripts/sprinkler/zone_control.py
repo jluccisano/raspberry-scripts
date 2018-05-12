@@ -16,7 +16,7 @@ class ZoneControl(object):
             description='Set zone state high=1 or low=0')
 
         parser.add_argument('--zone', help='Set zone 1/2/3/4/5 or *', required=False)
-        parser.add_argument('--state', help='Set state high=1 or low=0', required=False)
+        parser.add_argument('--state', help='Set state high=1 or low=0', required=True)
 
         args = parser.parse_args(sys.argv[2:])
 
