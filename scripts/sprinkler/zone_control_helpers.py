@@ -34,6 +34,7 @@ def get_zone(zoneId):
 
 
 def set_zone(zoneId, state):
+    zoneData = {}
     for zone in get_zones_definition():
         if zone["id"] == int(zoneId):
             GPIO.setup(zone["boardOut"], GPIO.OUT)
@@ -45,6 +46,7 @@ def set_zone(zoneId, state):
 
 
 def toggle_zone(zoneId):
+    zoneData = {}
     for zone in get_zones_definition():
         if zone["id"] == int(zoneId):
             GPIO.setup(zone["boardOut"], GPIO.OUT)
