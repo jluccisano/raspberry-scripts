@@ -24,10 +24,9 @@ class ZoneControl(object):
 
         if args.zone:
             response = json.dumps(set_zone(args.zone, args.state))
-
         else:
             response = json.dumps(set_all_zones(args.state))
-        return response
+        print response
 
     def toggle(self):
         response = ""
@@ -40,7 +39,7 @@ class ZoneControl(object):
 
         if args.zone:
             response = json.dumps(toggle_zone(args.zone))
-        return response
+        print response
 
     def get(self):
         response = ""
@@ -55,7 +54,7 @@ class ZoneControl(object):
             response = json.dumps(get_zone(args.zone))
         else:
             response = json.dumps(get_all_zones())
-        return response
+        print response
 
     def scenario(self):
         parser = argparse.ArgumentParser(
@@ -67,7 +66,7 @@ class ZoneControl(object):
         run_scenario(args.json)
 
     def reset(self):
-        return json.dumps(set_all_zones(1))
+        print json.dumps(set_all_zones(1))
 
     def __init__(self):
 
