@@ -41,7 +41,7 @@ def get_zone_by_id(zone):
 # GET /sprinkler/zones
 @app.route("/sprinkler/zones",  methods = ['GET'])
 def get_zones():
-    return jsonify(get_all_zones())
+    return jsonify(get_all_zones(), status=200, indent=4, sort_keys=True)
 
 # POST /sprinkler/reset
 @app.route("/sprinkler/reset", methods = ['POST'])
