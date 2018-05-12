@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import argparse
 import sys
+import json
 from zone_control_helpers import *
 
 # GPIO/BOARD | Relay IN | Rotors | Zone
@@ -21,10 +22,10 @@ class ZoneControl(object):
         args = parser.parse_args(sys.argv[2:])
 
         if args.zone:
-            print set_zone(args.zone, args.state)
+            return json.dumps(set_zone(args.zone, args.state))
 
         else:
-            set_all_zones(args.state)
+            return json.dumps(set_all_zones(args.state))
 
     def toggle(self):
         parser = argparse.ArgumentParser(
@@ -35,7 +36,7 @@ class ZoneControl(object):
         args = parser.parse_args(sys.argv[2:])
 
         if args.zone:
-            print toggle_zone(args.zone)
+            return json.dumps(toggle_zone(args.zone))
 
     def get(self):
         parser = argparse.ArgumentParser(
@@ -46,9 +47,9 @@ class ZoneControl(object):
         args = parser.parse_args(sys.argv[2:])
 
         if args.zone:
-            print get_zone(args.zone)
+            return json.dumps(get_zone(args.zone))
         else:
-            print get_all_zones()
+            return json.dumps(get_all_zones())
 
     def scenario(self):
         parser = argparse.ArgumentParser(
@@ -60,7 +61,7 @@ class ZoneControl(object):
         run_scenario(args.json)
 
     def reset(self):
-        set_all_zones(1)
+        return json.dumps(set_all_zones(1))
 
     def __init__(self):
 
