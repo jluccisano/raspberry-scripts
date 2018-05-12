@@ -18,12 +18,12 @@ def set_zone_by_id(zoneId):
     state = request.args.get('state', default=1, type=int)
     if state is None:
         return jsonify({'message': 'State param is mandatory'}, status=404)
-    return set_zone(zoneId, state)
+    return jsonify(status=200, indent=4, sort_keys=True, result = set_zone(zoneId, state))
 
 # POST /sprinkler/zone/1/toggle
 @app.route("/sprinkler/zone/<zoneId>/toggle", methods = ['POST'])
 def toggle_by_zone_id(zoneId):
-    return toggle_zone(zoneId)
+    return jsonify(status=200, indent=4, sort_keys=True, result = toggle_zone(zoneId))
 
 # POST /sprinkler/zones?state1
 @app.route("/sprinkler/zones", methods = ['POST'])
@@ -36,7 +36,7 @@ def set_zones():
 # GET /sprinkler/zone/1
 @app.route("/sprinkler/zone/<zone>",  methods = ['GET'])
 def get_zone_by_id(zone):
-    return jsonify(get_zone(zone))
+    return jsonify(status=200, indent=4, sort_keys=True, result = get_zone(zone))
 
 # GET /sprinkler/zones
 @app.route("/sprinkler/zones",  methods = ['GET'])
@@ -46,6 +46,6 @@ def get_zones():
 # POST /sprinkler/reset
 @app.route("/sprinkler/reset", methods = ['POST'])
 def reset():
-    return jsonify(set_all_zones(1))
+    return jsonify(status=200, indent=4, sort_keys=True, result = set_all_zones(1))
 
 
