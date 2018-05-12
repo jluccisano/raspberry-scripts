@@ -1,14 +1,7 @@
 #!/usr/bin/env python
-import RPi.GPIO as GPIO
 import argparse
-import json
 import sys
-import time
-from tqdm import tqdm
-
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BOARD)
-
+from zone_control_helpers import *
 
 # GPIO/BOARD | Relay IN | Rotors | Zone
 # 22/15	     | R2 IN2   | 1      | B
@@ -28,14 +21,10 @@ class ZoneControl(object):
         args = parser.parse_args(sys.argv[2:])
 
         if args.zone:
-            for zone in self.data["zones"]:
-                if zone["id"] == int(args.zone):
-                    GPIO.setup(zone["boardOut"], GPIO.OUT)
-                    GPIO.output(zone["boardOut"], int(args.state))
-                    zone["value"] = GPIO.input(int(zone["boardOut"]))
-                    print zone
+            print set_zone(args.zone, args.state)
+
         else:
-            self.setAll(args.state)
+            set_all_zones(args.state)
 
     def toggle(self):
         parser = argparse.ArgumentParser(
@@ -46,12 +35,7 @@ class ZoneControl(object):
         args = parser.parse_args(sys.argv[2:])
 
         if args.zone:
-            for zone in self.data["zones"]:
-                if zone["id"] == int(args.zone):
-                    GPIO.setup(zone["boardOut"], GPIO.OUT)
-                    GPIO.output(zone["boardOut"], not GPIO.input(int(zone["boardOut"])))
-                    zone["value"] = GPIO.input(int(zone["boardOut"]))
-                    print zone
+            print toggle_zone(args.zone)
 
     def get(self):
         parser = argparse.ArgumentParser(
@@ -62,56 +46,9 @@ class ZoneControl(object):
         args = parser.parse_args(sys.argv[2:])
 
         if args.zone:
-            print get_zone(self.data, args.zone)
+            print get_zone(args.zone)
         else:
-            print self.getAll()
-
-
-    def get_zone(zones, zoneId):
-        zoneData = {}
-        for zone in zones:
-            if zone["id"] == int(zoneId):
-                GPIO.setup(zone["boardOut"], GPIO.OUT)
-                zone["value"] = GPIO.input(int(zone["boardOut"]))
-                zoneData = zone
-            break
-        return zoneData
-
-
-    def getAll(self):
-        chan_list = []
-        for zone in self.data["zones"]:
-            chan_list.append(zone["boardOut"])
-        GPIO.setup(chan_list, GPIO.OUT)
-
-        for zone in self.data["zones"]:
-            zone["value"] = GPIO.input(int(zone["boardOut"]))
-
-        return self.data["zones"]
-
-    def setAll(self, state):
-        chan_list = []
-
-        for zone in self.data["zones"]:
-            chan_list.append(zone["boardOut"])
-        GPIO.setup(chan_list, GPIO.OUT)
-        GPIO.output(chan_list, int(state))
-        print self.getAll()
-
-    def setZone(self, zoneId, state):
-        for zone in self.data['zones']:
-            if zone['id'] == int(zoneId):
-                GPIO.setup(zone['boardOut'], GPIO.OUT)
-                GPIO.output(zone['boardOut'], int(state))
-
-    def runStep(self, zone, duration, description):
-        print description
-        print zone
-        self.setZone(zone, 0)
-        interval = float(duration) / 100
-        for i in tqdm(range(100)):
-            time.sleep(interval)
-        self.setZone(zone, 1)
+            print get_all_zones()
 
     def scenario(self):
         parser = argparse.ArgumentParser(
@@ -120,29 +57,12 @@ class ZoneControl(object):
         parser.add_argument('--json', help="[{ 'duration':10, 'zone':1, 'description':'Zone A'}...]", required=True)
 
         args = parser.parse_args(sys.argv[2:])
-
-        print 'start run scenario'
-
-        with open(args.json) as scenario_file:
-            self.scenario = json.load(scenario_file)
-
-        try:
-            for step in self.scenario:
-                print step
-                self.runStep(step['zone'], step['duration'], step['description'])
-        except KeyboardInterrupt:
-            self.reset()
-            sys.exit(0)
-
-        print 'finish scenario'
+        run_scenario(args.json)
 
     def reset(self):
-        self.setAll(1)
+        set_all_zones(1)
 
     def __init__(self):
-
-        with open('data.json') as data_file:
-            self.data = json.load(data_file)
 
         parser = argparse.ArgumentParser(
             description='Zone control',

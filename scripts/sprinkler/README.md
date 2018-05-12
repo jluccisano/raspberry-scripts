@@ -7,6 +7,8 @@ source ~/workspace/venv2.7/bin/activate
 # Install Flask
 
 pip install Flask
+pip install RPi.GPIO
+pip install tqdm
 
 # Run sprinkler server
 
