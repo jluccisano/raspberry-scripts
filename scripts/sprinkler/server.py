@@ -31,7 +31,7 @@ def set_zones():
     state = request.args.get('state', default=1, type=int)
     if state is None:
         return jsonify({'message': 'State param is mandatory'}, status=404)
-    return set_all_zones(state)
+    return jsonify(status=200, indent=4, sort_keys=True, result = set_all_zones(state))
 
 # GET /sprinkler/zone/1
 @app.route("/sprinkler/zone/<zone>",  methods = ['GET'])
