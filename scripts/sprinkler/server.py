@@ -1,6 +1,6 @@
 from zone_control_helpers import *
 from flask import Flask
-from flask import request
+from flask import request, jsonify
 
 app = Flask(__name__)
 
@@ -15,7 +15,7 @@ def set_zone_by_id(zone):
 # GET /sprinkler/zone/1
 @app.route("/sprinkler/zone/<zone>",  methods = ['GET'])
 def get_zone_by_id(zone):
-    return get_zone(zone)
+    return jsonify(get_zone(zone))
 
 # POST /sprinkler/reset
 
