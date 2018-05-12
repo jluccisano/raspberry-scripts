@@ -12,8 +12,21 @@ from zone_control_helpers import *
 # 27/13	     | R2 IN1   | 5      | E
 
 class ZoneControl(object):
+
+    def get(self):
+        parser = argparse.ArgumentParser(
+            description='Set zone state high=1 or low=0')
+
+        parser.add_argument('--zone', help='Set zone 1/2/3/4/5 or *', required=False)
+
+        args = parser.parse_args(sys.argv[2:])
+
+        if args.zone:
+            print json.dumps(get_zone(args.zone), indent=4,  sort_keys=True)
+        else:
+            print json.dumps(get_all_zones(), indent=4,  sort_keys=True)
+
     def set(self):
-        response = ""
         parser = argparse.ArgumentParser(
             description='Set zone state high=1 or low=0')
 
@@ -23,13 +36,11 @@ class ZoneControl(object):
         args = parser.parse_args(sys.argv[2:])
 
         if args.zone:
-            response = json.dumps(set_zone(args.zone, args.state), indent=4,  sort_keys=True)
+            print json.dumps(set_zone(args.zone, args.state), indent=4,  sort_keys=True)
         else:
-            response = json.dumps(set_all_zones(args.state), indent=4,  sort_keys=True)
-        print response
+            print json.dumps(set_all_zones(args.state), indent=4,  sort_keys=True)
 
     def toggle(self):
-        response = ""
         parser = argparse.ArgumentParser(
             description='Toggle zone value')
 
@@ -38,23 +49,7 @@ class ZoneControl(object):
         args = parser.parse_args(sys.argv[2:])
 
         if args.zone:
-            response = json.dumps(toggle_zone(args.zone), indent=4,  sort_keys=True)
-        print response
-
-    def get(self):
-        response = ""
-        parser = argparse.ArgumentParser(
-            description='Set zone state high=1 or low=0')
-
-        parser.add_argument('--zone', help='Set zone 1/2/3/4/5 or *', required=False)
-
-        args = parser.parse_args(sys.argv[2:])
-
-        if args.zone:
-            response = json.dumps(get_zone(args.zone), indent=4,  sort_keys=True)
-        else:
-            response = json.dumps(get_all_zones(), indent=4,  sort_keys=True)
-        print response
+            print json.dumps(toggle_zone(args.zone), indent=4,  sort_keys=True)
 
     def scenario(self):
         parser = argparse.ArgumentParser(
