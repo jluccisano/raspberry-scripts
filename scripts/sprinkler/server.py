@@ -17,6 +17,11 @@ def set_zone_by_id(zone):
 def get_zone_by_id(zone):
     return jsonify(get_zone(zone))
 
+# GET /sprinkler/zones
+@app.route("/sprinkler/zones",  methods = ['GET'])
+def get_zones():
+    return jsonify(get_all_zones())
+
 # POST /sprinkler/reset
 
 
