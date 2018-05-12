@@ -74,7 +74,7 @@ def set_all_zones(state):
         chan_list.append(zone["boardOut"])
         GPIO.setup(chan_list, GPIO.OUT)
         GPIO.output(chan_list, int(state))
-        print get_all_zones(zones)
+    return get_all_zones()
 
 
 def run_step(zone, duration, description):
