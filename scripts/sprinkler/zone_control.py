@@ -13,6 +13,7 @@ from zone_control_helpers import *
 
 class ZoneControl(object):
     def set(self):
+        response = ""
         parser = argparse.ArgumentParser(
             description='Set zone state high=1 or low=0')
 
@@ -22,23 +23,27 @@ class ZoneControl(object):
         args = parser.parse_args(sys.argv[2:])
 
         if args.zone:
-            return json.dumps(set_zone(args.zone, args.state))
+            response = json.dumps(set_zone(args.zone, args.state))
 
         else:
-            return json.dumps(set_all_zones(args.state))
+            response = json.dumps(set_all_zones(args.state))
+        return response
 
     def toggle(self):
+        response = ""
         parser = argparse.ArgumentParser(
             description='Toggle zone value')
 
-        parser.add_argument('--zone', help='Set zone 1/2/3/4/5', required=False)
+        parser.add_argument('--zone', help='Set zone 1/2/3/4/5', required=True)
 
         args = parser.parse_args(sys.argv[2:])
 
         if args.zone:
-            return json.dumps(toggle_zone(args.zone))
+            response = json.dumps(toggle_zone(args.zone))
+        return response
 
     def get(self):
+        response = ""
         parser = argparse.ArgumentParser(
             description='Set zone state high=1 or low=0')
 
@@ -47,9 +52,10 @@ class ZoneControl(object):
         args = parser.parse_args(sys.argv[2:])
 
         if args.zone:
-            return json.dumps(get_zone(args.zone))
+            response = json.dumps(get_zone(args.zone))
         else:
-            return json.dumps(get_all_zones())
+            response = json.dumps(get_all_zones())
+        return response
 
     def scenario(self):
         parser = argparse.ArgumentParser(

@@ -23,5 +23,8 @@ def get_zones():
     return jsonify(get_all_zones())
 
 # POST /sprinkler/reset
+@app.route("/sprinkler/reset", methods = ['POST'])
+def reset():
+    return reset()
 
 
