@@ -15,6 +15,7 @@ GPIO.setmode(GPIO.BOARD)
 # 17/11	     | R1 IN4   | 4      | C
 # 27/13	     | R2 IN1   | 5      | E
 
+
 def get_zones_definition():
     json_data = {}
     with open('data.json') as data_file:

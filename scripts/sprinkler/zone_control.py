@@ -23,9 +23,9 @@ class ZoneControl(object):
         args = parser.parse_args(sys.argv[2:])
 
         if args.zone:
-            response = json.dumps(set_zone(args.zone, args.state))
+            response = json.dumps(set_zone(args.zone, args.state), indent=4,  sort_keys=True)
         else:
-            response = json.dumps(set_all_zones(args.state))
+            response = json.dumps(set_all_zones(args.state), indent=4,  sort_keys=True)
         print response
 
     def toggle(self):
@@ -38,7 +38,7 @@ class ZoneControl(object):
         args = parser.parse_args(sys.argv[2:])
 
         if args.zone:
-            response = json.dumps(toggle_zone(args.zone))
+            response = json.dumps(toggle_zone(args.zone), indent=4,  sort_keys=True)
         print response
 
     def get(self):
@@ -51,9 +51,9 @@ class ZoneControl(object):
         args = parser.parse_args(sys.argv[2:])
 
         if args.zone:
-            response = json.dumps(get_zone(args.zone))
+            response = json.dumps(get_zone(args.zone), indent=4,  sort_keys=True)
         else:
-            response = json.dumps(get_all_zones())
+            response = json.dumps(get_all_zones(), indent=4,  sort_keys=True)
         print response
 
     def scenario(self):
@@ -66,7 +66,7 @@ class ZoneControl(object):
         run_scenario(args.json)
 
     def reset(self):
-        print json.dumps(set_all_zones(1))
+        print json.dumps(set_all_zones(1), indent=4,  sort_keys=True)
 
     def __init__(self):
 
