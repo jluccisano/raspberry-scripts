@@ -90,3 +90,5 @@ ENV/
 
 .idea
 vcs.xml
+
+server.conf
