@@ -1,7 +1,7 @@
 import json
 import sys
 import time
-
+import os
 import RPi.GPIO as GPIO
 from tqdm import tqdm
 
@@ -19,7 +19,8 @@ GPIO.setmode(GPIO.BOARD)
 
 def get_zones_definition():
     json_data = {}
-    with open('sprinkler/data.json') as data_file:
+    data_tpl = os.path.join(os.path.abspath(os.path.dirname(__file__))) + '/data.json'
+    with open(data_tpl) as data_file:
         json_data = json.load(data_file)
     return json_data["zones"]
 

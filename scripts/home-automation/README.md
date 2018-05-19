@@ -24,6 +24,9 @@ pip install tqdm
 
 sudo cp ~/workspace/raspberry-scripts/scripts/home-automation home-automation -r
 
+
+sudo ln -s ~/workspace/raspberry-scripts/scripts/home-automation /opt/home-automation
+
 Create server.conf file
 
 sudo vim server.conf
@@ -89,6 +92,14 @@ sudo systemctl status home-automation.service
 ```
 
 ```bash
+sudo systemctl stop home-automation.service
+```
+
+```bash
+tail -f /var/log/syslog
+```
+
+```bash
 ● home-automation.service - Home Automation Server
    Loaded: loaded (/lib/systemd/system/home-automation.service; enabled; vendor preset: enabled)
    Active: active (running) since Fri 2018-05-18 12:31:25 UTC; 60ms ago
@@ -149,7 +160,7 @@ curl -X POST \
          	"zone": "3",
          	"description": "Zone C"
          }]' \
-     "http://localhost:8515/sprinkler/scenario"
+     "http://192.168.0.13:8515/sprinkler/scenario"
 ```
 
 # Camera API
