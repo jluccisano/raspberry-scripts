@@ -1,9 +1,11 @@
 import ConfigParser
+import os
 from functools import wraps
+
 from flask import request, Response
 
 config = ConfigParser.RawConfigParser()
-config.read('server.conf')
+config.read(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'server.conf'))
 
 server_username = config.get('SERVER', 'username')
 server_password = config.get('SERVER', 'password')

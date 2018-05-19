@@ -8,7 +8,7 @@ from sprinkler.zone_control_helpers import *
 from synology.camera import *
 
 config = ConfigParser.RawConfigParser()
-config.read('server.conf')
+config.read(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'server.conf'))
 
 app = Flask(__name__)
 
@@ -25,7 +25,7 @@ def jsonify(status=200, indent=4, sort_keys=True, **kwargs):
     response.status_code = status
     return response
 
-# POST /sprinkler/zone/1?state=1
+# POST /sprinkler/zones/1?state=1
 @app.route("/sprinkler/zones/<zoneId>", methods = ['POST'])
 @requires_auth
 def set_zone_by_id(zoneId):
@@ -34,7 +34,7 @@ def set_zone_by_id(zoneId):
         return jsonify({'message': 'State param is mandatory'}, status=404)
     return jsonify(status=200, indent=4, sort_keys=True, result = set_zone(zoneId, state))
 
-# POST /sprinkler/zone/1/toggle
+# POST /sprinkler/zones/1/toggle
 @app.route("/sprinkler/zones/<zoneId>/toggle", methods = ['POST'])
 @requires_auth
 def toggle_by_zone_id(zoneId):
@@ -59,7 +59,11 @@ def get_zone_by_id(zone):
 @app.route("/sprinkler/zones",  methods = ['GET'])
 @requires_auth
 def get_zones():
-    return jsonify(status=200, indent=4, sort_keys=True, result = get_all_zones())
+    format = request.args.get('format')
+    if format is not None and format == 'lite':
+        return jsonify(status=200, indent=4, sort_keys=True, result = get_all_zones_state())
+    else:
+        return jsonify(status=200, indent=4, sort_keys=True, result = get_all_zones())
 
 # POST /sprinkler/reset
 @app.route("/sprinkler/reset", methods = ['POST'])

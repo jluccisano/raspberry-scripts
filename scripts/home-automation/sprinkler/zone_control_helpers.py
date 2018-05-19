@@ -70,6 +70,20 @@ def get_all_zones():
 
     return zones
 
+def get_all_zones_state():
+    chan_list = []
+    zones = get_zones_definition()
+    zones_state = []
+    for zone in zones:
+        chan_list.append(zone["boardOut"])
+        GPIO.setup(chan_list, GPIO.OUT)
+
+    for zone in zones:
+        zones_state.append(GPIO.input(int(zone["boardOut"])))
+
+    return zones_state
+
+
 
 def set_all_zones(state):
     chan_list = []
@@ -85,26 +99,20 @@ def run_step(zone, duration, description):
     print description
     print zone
     zones = get_zones_definition()
-    set_zone(zones, zone, 0)
+    set_zone(zone, 0)
     interval = float(duration) / 100
     for i in tqdm(range(100)):
         time.sleep(interval)
-        set_zone(zones, zone, 1)
+        set_zone(zone, 1)
 
 
-def run_scenario(json):
-    scenario = {}
+def run_scenario(json_scenario):
     print 'start run scenario'
-
-    with open(json) as scenario_file:
-        scenario = json.load(scenario_file)
-
     try:
-        for step in scenario:
+        for step in json_scenario:
             print step
             run_step(step['zone'], step['duration'], step['description'])
     except KeyboardInterrupt:
         set_all_zones(1)
         sys.exit(0)
-
     print 'finish scenario'
