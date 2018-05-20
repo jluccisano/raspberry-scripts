@@ -99,7 +99,6 @@ def set_all_zones(state):
 def run_step(zone, duration, description):
     print description
     print zone
-    zones = get_zones_definition()
     set_zone(zone, 0)
     interval = float(duration) / 100
     for i in tqdm(range(100)):

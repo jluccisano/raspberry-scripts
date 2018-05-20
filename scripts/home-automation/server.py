@@ -59,7 +59,7 @@ def get_zone_by_id(zone):
 @app.route("/sprinkler/zones",  methods = ['GET'])
 @requires_auth
 def get_zones():
-    format = request.args.get('format')
+    format = request.args.post('format')
     if format is not None and format == 'lite':
         return jsonify(status=200, indent=4, sort_keys=True, result = get_all_zones_state())
     else:
@@ -76,6 +76,8 @@ def reset():
 @requires_auth
 def scenario():
     json_scenario = request.get_json(silent=True)
+    if json_scenario is None:
+        json_scenario = json.load(request.form.get('data'))
     return jsonify(status=200, indent=4, sort_keys=True, result = run_scenario(json_scenario))
 
 

@@ -163,6 +163,15 @@ curl -X POST \
      "http://192.168.0.13:8515/sprinkler/scenario"
 ```
 
+or with form param (useful with curler application which don't manage json body)
+
+```bash
+curl -X POST \
+     -u user:passwd \
+     -F 'data=[{"duration": "10", "zone": "1", "description": "Zone A" },{"duration": "10", "zone": "2", "description": "Zone B" }]' \
+     "http://192.168.0.13:8515/sprinkler/scenario"
+```
+
 # Camera API
 
 ```bash
