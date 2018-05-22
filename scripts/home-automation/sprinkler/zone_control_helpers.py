@@ -5,9 +5,6 @@ import os
 import RPi.GPIO as GPIO
 from tqdm import tqdm
 
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BOARD)
-
 
 # GPIO/BOARD | Relay IN | Rotors | Zone
 # 22/15	     | R2 IN2   | 1      | B
@@ -22,10 +19,13 @@ class SprinklerControl:
     def __init__(self):
         """Initialize a Synology Surveillance API."""
         print 'Start RPI GPIO'
+        GPIO.setwarnings(False)
+        GPIO.setmode(GPIO.BOARD)
         chan_list = []
         for zone in self._get_zones_definition():
             chan_list.append(zone["boardOut"])
             GPIO.setup(chan_list, GPIO.OUT, initial=1)
+            print "setup GPIO " + chan_list
             zone["value"] = not GPIO.input(int(zone["boardOut"]))
             break
 
