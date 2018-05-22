@@ -29,7 +29,7 @@ def get_zone(zoneId):
     for zone in get_zones_definition():
         if zone["id"] == int(zoneId):
             GPIO.setup(zone["boardOut"], GPIO.OUT)
-            zone["value"] = GPIO.input(int(zone["boardOut"]))
+            zone["value"] = not GPIO.input(int(zone["boardOut"]))
             zoneData = zone
             break
     return zoneData
@@ -41,7 +41,7 @@ def set_zone(zoneId, state):
         if zone["id"] == int(zoneId):
             GPIO.setup(zone["boardOut"], GPIO.OUT)
             GPIO.output(zone["boardOut"], int(state))
-            zone["value"] = GPIO.input(int(zone["boardOut"]))
+            zone["value"] = not GPIO.input(int(zone["boardOut"]))
             zoneData = zone
             break
     return zoneData
@@ -53,7 +53,7 @@ def toggle_zone(zoneId):
         if zone["id"] == int(zoneId):
             GPIO.setup(zone["boardOut"], GPIO.OUT)
             GPIO.output(zone["boardOut"], not GPIO.input(int(zone["boardOut"])))
-            zone["value"] = GPIO.input(int(zone["boardOut"]))
+            zone["value"] = not GPIO.input(int(zone["boardOut"]))
             zoneData = zone
             break
     return zoneData
@@ -67,7 +67,7 @@ def get_all_zones():
         GPIO.setup(chan_list, GPIO.OUT)
 
     for zone in zones:
-        zone["value"] = GPIO.input(int(zone["boardOut"]))
+        zone["value"] = not GPIO.input(int(zone["boardOut"]))
 
     return zones
 
@@ -80,7 +80,7 @@ def get_all_zones_state():
         GPIO.setup(chan_list, GPIO.OUT)
 
     for zone in zones:
-        zones_state.append(GPIO.input(int(zone["boardOut"])))
+        zones_state.append(not GPIO.input(int(zone["boardOut"])))
 
     return zones_state
 
