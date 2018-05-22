@@ -21,9 +21,7 @@ class SprinklerControl:
         print 'Start RPI GPIO'
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BOARD)
-        #chan_list = []
         for zone in self._get_zones_definition():
-            #chan_list.append(zone["boardOut"])
             GPIO.setup(zone["boardOut"], GPIO.OUT, initial=1)
             print "setup GPIO " + str(zone["boardOut"])
             zone["value"] = not GPIO.input(int(zone["boardOut"]))
@@ -39,7 +37,6 @@ class SprinklerControl:
         zoneData = {}
         for zone in self._get_zones_definition():
             if zone["id"] == int(zoneId):
-                #GPIO.setup(zone["boardOut"], GPIO.OUT)
                 zone["value"] = not GPIO.input(int(zone["boardOut"]))
                 zoneData = zone
                 break
@@ -50,7 +47,6 @@ class SprinklerControl:
         zoneData = {}
         for zone in self._get_zones_definition():
             if zone["id"] == int(zoneId):
-                #GPIO.setup(zone["boardOut"], GPIO.OUT)
                 GPIO.output(zone["boardOut"], int(state))
                 zone["value"] = not GPIO.input(int(zone["boardOut"]))
                 zoneData = zone
@@ -62,7 +58,6 @@ class SprinklerControl:
         zoneData = {}
         for zone in self._get_zones_definition():
             if zone["id"] == int(zoneId):
-                #GPIO.setup(zone["boardOut"], GPIO.OUT)
                 GPIO.output(zone["boardOut"], not GPIO.input(int(zone["boardOut"])))
                 zone["value"] = not GPIO.input(int(zone["boardOut"]))
                 zoneData = zone
@@ -71,38 +66,24 @@ class SprinklerControl:
 
 
     def get_all_zones(self):
-        chan_list = []
         zones = self._get_zones_definition()
-        #for zone in zones:
-        #    chan_list.append(zone["boardOut"])
-        #    GPIO.setup(chan_list, GPIO.OUT)
-
         for zone in zones:
             zone["value"] = not GPIO.input(int(zone["boardOut"]))
 
         return zones
 
     def get_all_zones_state(self):
-        chan_list = []
         zones = self._get_zones_definition()
         zones_state = []
-        #for zone in zones:
-        #    chan_list.append(zone["boardOut"])
-        #    GPIO.setup(chan_list, GPIO.OUT)
-
         for zone in zones:
             zones_state.append(not GPIO.input(int(zone["boardOut"])))
-
         return zones_state
-
-
 
     def set_all_zones(self, state):
         chan_list = []
         zones = self._get_zones_definition()
         for zone in zones:
             chan_list.append(zone["boardOut"])
-            #GPIO.setup(chan_list, GPIO.OUT)
             GPIO.output(chan_list, int(state))
         return self.get_all_zones()
 
