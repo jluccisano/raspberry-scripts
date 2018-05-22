@@ -21,13 +21,12 @@ class SprinklerControl:
         print 'Start RPI GPIO'
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BOARD)
-        chan_list = []
+        #chan_list = []
         for zone in self._get_zones_definition():
-            chan_list.append(zone["boardOut"])
-            GPIO.setup(chan_list, GPIO.OUT, initial=1)
-            print "setup GPIO " + str(chan_list)
+            #chan_list.append(zone["boardOut"])
+            GPIO.setup(zone["boardOut"], GPIO.OUT, initial=1)
+            print "setup GPIO " + str(zone["boardOut"])
             zone["value"] = not GPIO.input(int(zone["boardOut"]))
-            break
 
     def _get_zones_definition(self):
         json_data = {}
