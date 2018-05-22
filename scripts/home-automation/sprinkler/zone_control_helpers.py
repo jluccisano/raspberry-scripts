@@ -25,7 +25,7 @@ class SprinklerControl:
         for zone in self._get_zones_definition():
             chan_list.append(zone["boardOut"])
             GPIO.setup(chan_list, GPIO.OUT, initial=1)
-            print "setup GPIO " + chan_list
+            print "setup GPIO " + str(chan_list)
             zone["value"] = not GPIO.input(int(zone["boardOut"]))
             break
 
