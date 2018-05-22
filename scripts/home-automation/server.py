@@ -18,6 +18,8 @@ base_url = config.get('SYNOLOGY', 'base_url')
 
 synoApi = SurveillanceCameraApi(base_url, account, password)
 
+sprinklerControl = SprinklerControl()
+
 def jsonify(status=200, indent=4, sort_keys=True, **kwargs):
     response = make_response(dumps(dict(**kwargs), indent=indent, sort_keys=sort_keys))
     response.headers['Content-Type'] = 'application/json; charset=utf-8'
@@ -32,13 +34,13 @@ def set_zone_by_id(zoneId):
     state = request.args.get('state', default=1, type=int)
     if state is None:
         return jsonify({'message': 'State param is mandatory'}, status=404)
-    return jsonify(status=200, indent=4, sort_keys=True, result = set_zone(zoneId, state))
+    return jsonify(status=200, indent=4, sort_keys=True, result = sprinklerControl.set_zone(zoneId, state))
 
 # POST /sprinkler/zones/1/toggle
 @app.route("/sprinkler/zones/<zoneId>/toggle", methods = ['POST'])
 @requires_auth
 def toggle_by_zone_id(zoneId):
-    return jsonify(status=200, indent=4, sort_keys=True, result = toggle_zone(zoneId))
+    return jsonify(status=200, indent=4, sort_keys=True, result = sprinklerControl.toggle_zone(zoneId))
 
 # POST /sprinkler/zones?state1
 @app.route("/sprinkler/zones", methods = ['POST'])
@@ -47,13 +49,13 @@ def set_zones():
     state = request.args.get('state', default=1, type=int)
     if state is None:
         return jsonify({'message': 'State param is mandatory'}, status=404)
-    return jsonify(status=200, indent=4, sort_keys=True, result = set_all_zones(state))
+    return jsonify(status=200, indent=4, sort_keys=True, result = sprinklerControl.set_all_zones(state))
 
 # GET /sprinkler/zone/1
 @app.route("/sprinkler/zones/<zone>",  methods = ['GET'])
 @requires_auth
 def get_zone_by_id(zone):
-    return jsonify(status=200, indent=4, sort_keys=True, result = get_zone(zone))
+    return jsonify(status=200, indent=4, sort_keys=True, result = sprinklerControl.get_zone(zone))
 
 # GET /sprinkler/zones
 @app.route("/sprinkler/zones",  methods = ['GET'])
@@ -61,15 +63,15 @@ def get_zone_by_id(zone):
 def get_zones():
     format = request.args.get('format')
     if format is not None and format == 'lite':
-        return jsonify(status=200, indent=4, sort_keys=True, result = get_all_zones_state())
+        return jsonify(status=200, indent=4, sort_keys=True, result = sprinklerControl.get_all_zones_state())
     else:
-        return jsonify(status=200, indent=4, sort_keys=True, result = get_all_zones())
+        return jsonify(status=200, indent=4, sort_keys=True, result = sprinklerControl.get_all_zones())
 
 # POST /sprinkler/reset
 @app.route("/sprinkler/reset", methods = ['POST'])
 @requires_auth
 def reset():
-    return jsonify(status=200, indent=4, sort_keys=True, result = set_all_zones(1))
+    return jsonify(status=200, indent=4, sort_keys=True, result = sprinklerControl.set_all_zones(1))
 
 # POST /sprinkler/scenario
 @app.route("/sprinkler/scenario", methods = ['POST'])
@@ -78,7 +80,7 @@ def scenario():
     json_scenario = request.get_json(silent=True)
     if json_scenario is None:
         json_scenario = json.load(request.form.get('data'))
-    return jsonify(status=200, indent=4, sort_keys=True, result = run_scenario(json_scenario))
+    return jsonify(status=200, indent=4, sort_keys=True, result = sprinklerControl.run_scenario(json_scenario))
 
 
 #### Synology surveillance camera

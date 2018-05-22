@@ -11,6 +11,7 @@ from zone_control_helpers import *
 # 17/11	     | R1 IN4   | 4      | C
 # 27/13	     | R2 IN1   | 5      | E
 
+
 class ZoneControl(object):
 
     def get(self):
@@ -22,9 +23,9 @@ class ZoneControl(object):
         args = parser.parse_args(sys.argv[2:])
 
         if args.zone:
-            print json.dumps(get_zone(args.zone), indent=4,  sort_keys=True)
+            print json.dumps(self._sprinklerControl.get_zone(args.zone), indent=4,  sort_keys=True)
         else:
-            print json.dumps(get_all_zones(), indent=4,  sort_keys=True)
+            print json.dumps(self._sprinklerControl.get_all_zones(), indent=4,  sort_keys=True)
 
     def set(self):
         parser = argparse.ArgumentParser(
@@ -36,9 +37,9 @@ class ZoneControl(object):
         args = parser.parse_args(sys.argv[2:])
 
         if args.zone:
-            print json.dumps(set_zone(args.zone, args.state), indent=4,  sort_keys=True)
+            print json.dumps(self._sprinklerControl.set_zone(args.zone, args.state), indent=4,  sort_keys=True)
         else:
-            print json.dumps(set_all_zones(args.state), indent=4,  sort_keys=True)
+            print json.dumps(self._sprinklerControl.set_all_zones(args.state), indent=4,  sort_keys=True)
 
     def toggle(self):
         parser = argparse.ArgumentParser(
@@ -49,7 +50,7 @@ class ZoneControl(object):
         args = parser.parse_args(sys.argv[2:])
 
         if args.zone:
-            print json.dumps(toggle_zone(args.zone), indent=4,  sort_keys=True)
+            print json.dumps(self._sprinklerControl.toggle_zone(args.zone), indent=4,  sort_keys=True)
 
     def scenario(self):
         parser = argparse.ArgumentParser(
@@ -58,12 +59,14 @@ class ZoneControl(object):
         parser.add_argument('--json', help="[{ 'duration':10, 'zone':1, 'description':'Zone A'}...]", required=True)
 
         args = parser.parse_args(sys.argv[2:])
-        run_scenario(args.json)
+        self._sprinklerControl.run_scenario(args.json)
 
     def reset(self):
-        print json.dumps(set_all_zones(1), indent=4,  sort_keys=True)
+        print json.dumps(self._sprinklerControl.set_all_zones(1), indent=4,  sort_keys=True)
 
     def __init__(self):
+
+        self._sprinklerControl = SprinklerControl()
 
         parser = argparse.ArgumentParser(
             description='Zone control',
