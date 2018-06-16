@@ -104,7 +104,7 @@ def scenario():
     force = request.args.get('force', bool)
     job = ""
     # run direct
-    if force:
+    if force == True:
         job = scheduler.add_job(run_scenario, 'date')
     else:
         current = scheduler.get_job("myScenario", "default")

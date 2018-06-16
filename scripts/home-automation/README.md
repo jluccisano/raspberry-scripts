@@ -223,8 +223,10 @@ curl -X POST \
          "id" : "scenario1",
          "cron_expression": "* * * * *",
          }' \
-     "http://localhost:8515/sprinkler/v2/scenario"
+     "http://localhost:8515/api/sprinkler/v2/scenario"
 ```
+
+
 
 Get list of scenario
 

@@ -50,9 +50,9 @@ def run_scenario():
     try:
         for zone in sprinklerControl.get_zones_definition():
             if zone["type"] == "irrigate":
-                _run_step(zone, irrigate_duration)
+                _run_step(zone['id'], irrigate_duration)
             elif zone["type"] == "drop_by_drop":
-                _run_step(zone, drop_by_drop_duration)
+                _run_step(zone['id'], drop_by_drop_duration)
     except KeyboardInterrupt:
         sprinklerControl.set_all_zones(1)
         sys.exit(0)
