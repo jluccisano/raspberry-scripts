@@ -1,24 +1,41 @@
+import atexit
+import logging
 from json import dumps
 
+from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask
 from flask import make_response
+from pytz import utc
 
+from alarm_service import *
 from auth import *
-from sprinkler.zone_control_helpers import *
-from synology.camera import *
+from sprinkler_service import *
 
-config = ConfigParser.RawConfigParser()
-config.read(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'server.conf'))
+log = logging.getLogger('apscheduler.executors.default')
+log.setLevel(logging.INFO)  # DEBUG
+fmt = logging.Formatter('%(levelname)s:%(name)s:%(message)s')
+h = logging.StreamHandler()
+h.setFormatter(fmt)
+log.addHandler(h)
+
+jobstores = {
+    'default': SQLAlchemyJobStore(url='sqlite:///jobs.sqlite')
+}
+executors = {
+    'default': ThreadPoolExecutor(1),
+    'processpool': ProcessPoolExecutor(1)
+}
+job_defaults = {
+    'coalesce': False,
+    'max_instances': 1
+}
+
+scheduler = BackgroundScheduler(jobstores=jobstores, executors=executors, job_defaults=job_defaults, timezone=utc)
+scheduler.start()
 
 app = Flask(__name__)
-
-account = config.get('SYNOLOGY', 'account')
-password = config.get('SYNOLOGY', 'password')
-base_url = config.get('SYNOLOGY', 'base_url')
-
-synoApi = SurveillanceCameraApi(base_url, account, password)
-
-sprinklerControl = SprinklerControl()
 
 def jsonify(status=200, indent=4, sort_keys=True, **kwargs):
     response = make_response(dumps(dict(**kwargs), indent=indent, sort_keys=sort_keys))
@@ -27,85 +44,114 @@ def jsonify(status=200, indent=4, sort_keys=True, **kwargs):
     response.status_code = status
     return response
 
+
 # POST /sprinkler/zones/1?state=1
-@app.route("/sprinkler/zones/<zoneId>", methods = ['POST'])
+@app.route("/sprinkler/zones/<zoneId>", methods=['POST'])
 @requires_auth
 def set_zone_by_id(zoneId):
     state = request.args.get('state', default=1, type=int)
     if state is None:
         return jsonify({'message': 'State param is mandatory'}, status=404)
-    return jsonify(status=200, indent=4, sort_keys=True, result = sprinklerControl.set_zone(zoneId, state))
+    return jsonify(status=200, indent=4, sort_keys=True, result=set_zone(zoneId, state))
+
 
 # POST /sprinkler/zones/1/toggle
-@app.route("/sprinkler/zones/<zoneId>/toggle", methods = ['POST'])
+@app.route("/sprinkler/zones/<zoneId>/toggle", methods=['POST'])
 @requires_auth
 def toggle_by_zone_id(zoneId):
-    return jsonify(status=200, indent=4, sort_keys=True, result = sprinklerControl.toggle_zone(zoneId))
+    return jsonify(status=200, indent=4, sort_keys=True, result=toggle_zone(zoneId))
+
 
 # POST /sprinkler/zones?state1
-@app.route("/sprinkler/zones", methods = ['POST'])
+@app.route("/sprinkler/zones", methods=['POST'])
 @requires_auth
 def set_zones():
     state = request.args.get('state', default=1, type=int)
     if state is None:
         return jsonify({'message': 'State param is mandatory'}, status=404)
-    return jsonify(status=200, indent=4, sort_keys=True, result = sprinklerControl.set_all_zones(state))
+    return jsonify(status=200, indent=4, sort_keys=True, result=set_all_zones(state))
+
 
 # GET /sprinkler/zone/1
-@app.route("/sprinkler/zones/<zone>",  methods = ['GET'])
+@app.route("/sprinkler/zones/<zone>", methods=['GET'])
 @requires_auth
 def get_zone_by_id(zone):
-    return jsonify(status=200, indent=4, sort_keys=True, result = sprinklerControl.get_zone(zone))
+    return jsonify(status=200, indent=4, sort_keys=True, result=get_zone(zone))
+
 
 # GET /sprinkler/zones
-@app.route("/sprinkler/zones",  methods = ['GET'])
+@app.route("/sprinkler/zones", methods=['GET'])
 @requires_auth
 def get_zones():
     format = request.args.get('format')
     if format is not None and format == 'lite':
-        return jsonify(status=200, indent=4, sort_keys=True, result = sprinklerControl.get_all_zones_state())
+        return jsonify(status=200, indent=4, sort_keys=True, result=get_all_zones_state())
     else:
-        return jsonify(status=200, indent=4, sort_keys=True, result = sprinklerControl.get_all_zones())
+        return jsonify(status=200, indent=4, sort_keys=True, result=get_all_zones())
+
 
 # POST /sprinkler/reset
-@app.route("/sprinkler/reset", methods = ['POST'])
+@app.route("/sprinkler/reset", methods=['POST'])
 @requires_auth
 def reset():
-    return jsonify(status=200, indent=4, sort_keys=True, result = sprinklerControl.set_all_zones(1))
+    return jsonify(status=200, indent=4, sort_keys=True, result=set_all_zones(1))
 
-# POST /sprinkler/scenario
-@app.route("/sprinkler/scenario", methods = ['POST'])
+
+# POST /api/sprinkler/v2/scenario
+@app.route("/api/sprinkler/v2/scenario", methods=['POST'])
 @requires_auth
 def scenario():
-    json_scenario = request.get_json(silent=True)
-    if json_scenario is None:
-        json_scenario = json.load(request.form.get('data'))
-    return jsonify(status=200, indent=4, sort_keys=True, result = sprinklerControl.run_scenario(json_scenario))
+    force = request.args.get('force', bool)
+    job = ""
+    # run direct
+    if force:
+        job = scheduler.add_job(run_scenario, 'date')
+    else:
+        current = scheduler.get_job("myScenario", "default")
+        print current
+        if current:
+            scheduler.remove_job("myScenario", "default")
+        job = scheduler.add_job(run_scenario, 'cron', id="myScenario", hour=7, minute=30)
+    print job
+    return jsonify(status=200, indent=4, sort_keys=True, result=str(job))
+
+
+# GET /sprinkler/zone/1
+@app.route("/api/sprinkler/scenarios", methods=['GET'])
+@requires_auth
+def get_scenarios():
+    print scheduler.get_jobs()
+    return jsonify(status=200)
 
 
 #### Synology surveillance camera
 
 # GET /cameras?name='Camera Salon'
-@app.route("/cameras", methods = ['GET'])
+@app.route("/cameras", methods=['GET'])
 @requires_auth
 def get_camera_by_name():
     name = request.args.get('name')
     if name is None:
-        return jsonify( status=404, indent=4, sort_keys=True, result = {'message': 'Name param is mandatory'})
-    return jsonify(status=200, indent=4, sort_keys=True, result = synoApi.get_camera_by_name(name))
+        return jsonify(status=404, indent=4, sort_keys=True, result={'message': 'Name param is mandatory'})
+    return jsonify(status=200, indent=4, sort_keys=True, result=get_camera_by_name(name))
+
 
 # POST /cameras/13/enable
-@app.route("/cameras/<id>/enable", methods = ['POST'])
+@app.route("/cameras/<id>/enable", methods=['POST'])
 @requires_auth
 def enable_camera_by_id(id):
-    return jsonify(status=200, indent=4, sort_keys=True, result = synoApi.enable_camera(id))
+    return jsonify(status=200, indent=4, sort_keys=True, result=enable_camera(id))
+
 
 # POST /cameras/13/disable
-@app.route("/cameras/<id>/disable", methods = ['POST'])
+@app.route("/cameras/<id>/disable", methods=['POST'])
 @requires_auth
 def disable_camera_by_id(id):
-    return jsonify(status=200, indent=4, sort_keys=True, result = synoApi.disable_camera(id))
+    return jsonify(status=200, indent=4, sort_keys=True, result=disable_camera(id))
 
+
+# Shutdown your cron thread if the web process is stopped
+atexit.register(lambda: scheduler.shutdown(wait=False))
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8515)

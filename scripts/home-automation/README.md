@@ -10,11 +10,24 @@ source ~/workspace/venv2.7/bin/activate
 
 # Install Flask
 ```bash
-pip install Flask
+sudo pip install Flask
 ```
 ```bash
-pip install RPi.GPIO
+sudo pip install RPi.GPIO
 ```
+
+```bash
+sudo pip install apscheduler
+
+sudo pip install sqlalchemy
+
+```
+
+```bash
+sudo apt-get install sqlite3
+```
+
+
 or for development mode.
 https://github.com/willbuckner/rpi-gpio-development-mock
 
@@ -117,29 +130,31 @@ May 18 12:31:25 raspberrypi systemd[1]: Started Home Automation Server.
 # Sprinkler API
 
 ```bash
-curl -X GET -u user:passwd "http://192.168.0.13:8515/sprinkler/zones"
+curl -X GET -u user:passwd "http://localhost:8515/sprinkler/zones"
 ```
 
 ```bash
-curl -X POST -u user:passwd "http://192.168.0.13:8515/sprinkler/zones?format=lite"
+curl -X POST -u user:passwd "http://localhost:8515/sprinkler/zones?format=lite"
 ```
 
 ```bash
-curl -X POST -u user:passwd "http://192.168.0.13:8515/sprinkler/zones/1?state=0"
+curl -X POST -u user:passwd "http://localhost:8515/sprinkler/zones/1?state=0"
 ```
 
 ```bash
-curl -X POST -u user:passwd "http://192.168.0.13:8515/sprinkler/zones/1/toggle"
+curl -X POST -u user:passwd "http://localhost:8515/sprinkler/zones/1/toggle"
 ```
 
 
 ```bash
-curl -X POST -u user:passwd "http://192.168.0.13:8515/sprinkler/zones?state=0"
+curl -X POST -u user:passwd "http://localhost:8515/sprinkler/zones?state=0"
 ```
 
 ```bash
-curl -X POST -u user:passwd "http://192.168.0.13:8515/sprinkler/reset"
+curl -X POST -u user:passwd "http://localhost:8515/sprinkler/reset"
 ```
+
+Run scenario
 
 ```bash
 curl -X POST \
@@ -160,7 +175,71 @@ curl -X POST \
          	"zone": "3",
          	"description": "Zone C"
          }]' \
-     "http://192.168.0.13:8515/sprinkler/scenario"
+     "http://localhost:8515/sprinkler/scenario"
+```
+
+Trigger job
+
+```bash
+curl -X POST -u user:passwd "http://localhost:8515/sprinkler/scenario/{id}"
+```
+
+Schedule scenario
+
+```bash
+curl -X POST \
+     --header "Content-Type: application/json" \
+     -u user:passwd \
+     -d '{
+         "id" : "scenario1",
+         "cron_expression": "* * * * *",
+         "scenario": [{
+            	"duration": "5",
+            	"zone": "1",
+            	"description": "Zone A"
+            },
+            {
+            	"duration": "5",
+            	"zone": "2",
+            	"description": "Zone B"
+            },
+            {
+            	"duration": "5",
+            	"zone": "3",
+            	"description": "Zone C"
+         }]
+         }' \
+     "http://localhost:8515/sprinkler/schedule"
+```
+
+
+Schedule scenario
+
+```bash
+curl -X POST \
+     --header "Content-Type: application/json" \
+     -u user:passwd \
+     -d '{
+         "id" : "scenario1",
+         "cron_expression": "* * * * *",
+         }' \
+     "http://localhost:8515/sprinkler/v2/scenario"
+```
+
+Get list of scenario
+
+```bash
+curl -X GET -u user:passwd "http://localhost:8515/api/sprinkler/scenarios"
+```
+
+```bash
+curl -X GET -u user:passwd "http://localhost:8515/api/sprinkler/scenarios"
+```
+
+Delete scenario  by id
+
+```bash
+curl -X DELETE -u user:passwd "http://localhost:8515/api/sprinkler/scenario/{1}"
 ```
 
 or with form param (useful with curler application which don't manage json body)
@@ -169,7 +248,7 @@ or with form param (useful with curler application which don't manage json body)
 curl -X POST \
      -u user:passwd \
      -F 'data=[{"duration": "10", "zone": "1", "description": "Zone A" },{"duration": "10", "zone": "2", "description": "Zone B" }]' \
-     "http://192.168.0.13:8515/sprinkler/scenario"
+     "http://localhost:8515/sprinkler/scenario"
 ```
 
 # Camera API

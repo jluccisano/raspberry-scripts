@@ -1,7 +1,9 @@
 import requests
-#https://global.download.synology.com/download/Document/DeveloperGuide/Surveillance_Station_Web_API_v2.0.pdf
+
+# https://global.download.synology.com/download/Document/DeveloperGuide/Surveillance_Station_Web_API_v2.0.pdf
 
 ERROR_CODE_SESSION_EXPIRED = 105
+
 
 class SurveillanceCameraApi:
     """An implementation of a Synology SurveillanceStation API."""
@@ -13,7 +15,7 @@ class SurveillanceCameraApi:
                    'account': self._account,
                    'passwd': self._password,
                    'session': 'SurveillanceStation',
-                   'format':'sid'}
+                   'format': 'sid'}
         r = self._get_json_with_retry(self._base_url + 'auth.cgi', payload)
         self._sid = r['data']['sid']
 
@@ -50,7 +52,7 @@ class SurveillanceCameraApi:
 
     def _get(self, url, payload):
         response = requests.get(url, payload, timeout=self._timeout,
-                            verify=self._verify_ssl)
+                                verify=self._verify_ssl)
 
         response.raise_for_status()
         return response
@@ -85,6 +87,7 @@ class SurveillanceCameraApi:
         self._verify_ssl = True
 
         self._initialize_api_sid()
+
 
 class SessionExpiredException(Exception):
     """An error indicating session expired."""

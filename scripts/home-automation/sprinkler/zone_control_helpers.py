@@ -1,9 +1,7 @@
 import json
-import sys
-import time
 import os
+
 import RPi.GPIO as GPIO
-from tqdm import tqdm
 
 
 # GPIO/BOARD | Relay IN | Rotors | Zone
@@ -17,16 +15,15 @@ class SprinklerControl:
     """ TODO """
 
     def __init__(self):
-        """Initialize a Synology Surveillance API."""
-        print 'Start RPI GPIO'
+        """Initialize a Sprinkler control API."""
+        print 'Starting RPI GPIO'
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BOARD)
-        for zone in self._get_zones_definition():
+        for zone in self.get_zones_definition():
             GPIO.setup(zone["boardOut"], GPIO.OUT, initial=1)
-            print "setup GPIO " + str(zone["boardOut"])
             zone["value"] = not GPIO.input(int(zone["boardOut"]))
 
-    def _get_zones_definition(self):
+    def get_zones_definition(self):
         json_data = {}
         data_tpl = os.path.join(os.path.abspath(os.path.dirname(__file__))) + '/data.json'
         with open(data_tpl) as data_file:
@@ -35,17 +32,16 @@ class SprinklerControl:
 
     def get_zone(self, zoneId):
         zoneData = {}
-        for zone in self._get_zones_definition():
+        for zone in self.get_zones_definition():
             if zone["id"] == int(zoneId):
                 zone["value"] = not GPIO.input(int(zone["boardOut"]))
                 zoneData = zone
                 break
         return zoneData
 
-
     def set_zone(self, zoneId, state):
         zoneData = {}
-        for zone in self._get_zones_definition():
+        for zone in self.get_zones_definition():
             if zone["id"] == int(zoneId):
                 GPIO.output(zone["boardOut"], int(state))
                 zone["value"] = not GPIO.input(int(zone["boardOut"]))
@@ -53,10 +49,9 @@ class SprinklerControl:
                 break
         return zoneData
 
-
     def toggle_zone(self, zoneId):
         zoneData = {}
-        for zone in self._get_zones_definition():
+        for zone in self.get_zones_definition():
             if zone["id"] == int(zoneId):
                 GPIO.output(zone["boardOut"], not GPIO.input(int(zone["boardOut"])))
                 zone["value"] = not GPIO.input(int(zone["boardOut"]))
@@ -64,16 +59,15 @@ class SprinklerControl:
                 break
         return zoneData
 
-
     def get_all_zones(self):
-        zones = self._get_zones_definition()
+        zones = self.get_zones_definition()
         for zone in zones:
             zone["value"] = not GPIO.input(int(zone["boardOut"]))
 
         return zones
 
     def get_all_zones_state(self):
-        zones = self._get_zones_definition()
+        zones = self.get_zones_definition()
         zones_state = []
         for zone in zones:
             zones_state.append(not GPIO.input(int(zone["boardOut"])))
@@ -81,30 +75,8 @@ class SprinklerControl:
 
     def set_all_zones(self, state):
         chan_list = []
-        zones = self._get_zones_definition()
+        zones = self.get_zones_definition()
         for zone in zones:
             chan_list.append(zone["boardOut"])
             GPIO.output(chan_list, int(state))
         return self.get_all_zones()
-
-
-    def _run_step(self, zone, duration, description):
-        print description
-        print zone
-        self.set_zone(zone, 0)
-        interval = float(duration) / 100
-        for i in tqdm(range(100)):
-            time.sleep(interval)
-            self.set_zone(zone, 1)
-
-
-    def run_scenario(self, json_scenario):
-        print 'start run scenario'
-        try:
-            for step in json_scenario:
-                print step
-                self._run_step(step['zone'], step['duration'], step['description'])
-        except KeyboardInterrupt:
-            self.set_all_zones(1)
-            sys.exit(0)
-        print 'finish scenario'
