@@ -120,8 +120,7 @@ def scenario():
 @app.route("/api/sprinkler/scenarios", methods=['GET'])
 @requires_auth
 def get_scenarios():
-    print scheduler.get_jobs()
-    return jsonify(status=200)
+    return jsonify(status=200, indent=4, sort_keys=True, result=str(scheduler.get_jobs()))
 
 
 #### Synology surveillance camera

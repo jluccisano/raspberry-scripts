@@ -234,10 +234,6 @@ Get list of scenario
 curl -X GET -u user:passwd "http://localhost:8515/api/sprinkler/scenarios"
 ```
 
-```bash
-curl -X GET -u user:passwd "http://localhost:8515/api/sprinkler/scenarios"
-```
-
 Delete scenario  by id
 
 ```bash
