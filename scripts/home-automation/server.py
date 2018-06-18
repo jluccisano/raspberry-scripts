@@ -1,12 +1,16 @@
 import atexit
+import json
 import logging
 from json import dumps
 
 from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.schedulers.background import BackgroundScheduler
-from flask import Flask
+from apscheduler.triggers.cron import CronTrigger
+from flask import Flask, send_file
 from flask import make_response
+from flask_swagger_ui import get_swaggerui_blueprint
+
 from pytz import utc
 
 from alarm_service import *
@@ -32,10 +36,30 @@ job_defaults = {
     'max_instances': 1
 }
 
+SWAGGER_URL = '/api/docs'  # URL for exposing Swagger UI (without trailing '/')
+API_URL = '/resources/swagger.json'  # Our API url (can of course be a local resource)
+
+# Call factory function to create our blueprint
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,  # Swagger UI static files will be mapped to '{SWAGGER_URL}/dist/'
+    API_URL,
+    config={  # Swagger UI config overrides
+        'app_name': "Test application"
+    },
+    # oauth_config={  # OAuth config. See https://github.com/swagger-api/swagger-ui#oauth2-configuration .
+    #    'clientId': "your-client-id",
+    #    'clientSecret': "your-client-secret-if-required",
+    #    'realm': "your-realms",
+    #    'appName': "your-app-name",
+    #    'scopeSeparator': " ",
+    #    'additionalQueryStringParams': {'test': "hello"}
+    # }
+)
+
 scheduler = BackgroundScheduler(jobstores=jobstores, executors=executors, job_defaults=job_defaults, timezone=utc)
 scheduler.start()
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/resources')
 
 def jsonify(status=200, indent=4, sort_keys=True, **kwargs):
     response = make_response(dumps(dict(**kwargs), indent=indent, sort_keys=sort_keys))
@@ -44,6 +68,11 @@ def jsonify(status=200, indent=4, sort_keys=True, **kwargs):
     response.status_code = status
     return response
 
+
+@app.route('/resources/swagger.json')
+def swagger_json():
+    # Read before use: http://flask.pocoo.org/docs/0.12/api/#flask.send_file
+    return send_file('resources/swagger.json')
 
 # POST /sprinkler/zones/1?state=1
 @app.route("/sprinkler/zones/<zoneId>", methods=['POST'])
@@ -103,6 +132,12 @@ def reset():
 def scenario():
     force = request.args.get('force', bool)
     job = ""
+    body = request.get_json(silent=True)
+    if body is None:
+        body = json.load(request.form.get('data'))
+    cron_expression = body['cron_expression']
+    if cron_expression is None:
+        return jsonify(status=404, indent=4, sort_keys=True, result={'message': 'Cron expression param is mandatory'})
     # run direct
     if force == True:
         job = scheduler.add_job(run_scenario, 'date')
@@ -111,7 +146,7 @@ def scenario():
         print current
         if current:
             scheduler.remove_job("myScenario", "default")
-        job = scheduler.add_job(run_scenario, 'cron', id="myScenario", hour=7, minute=30)
+        job = scheduler.add_job(func=run_scenario, id="myScenario", trigger=CronTrigger.from_crontab(cron_expression))
     print job
     return jsonify(status=200, indent=4, sort_keys=True, result=str(job))
 
@@ -149,6 +184,7 @@ def disable_camera_by_id(id):
     return jsonify(status=200, indent=4, sort_keys=True, result=disable_camera(id))
 
 
+app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 # Shutdown your cron thread if the web process is stopped
 atexit.register(lambda: scheduler.shutdown(wait=False))
 
