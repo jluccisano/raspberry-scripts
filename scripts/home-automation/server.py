@@ -169,6 +169,11 @@ def mode_manu():
 def get_scenarios():
     return jsonify(status=200, indent=4, sort_keys=True, result=str(scheduler.get_jobs()))
 
+# GET /sprinkler/zone/1
+@app.route("/api/sprinkler/v4/status", methods=['GET'])
+@requires_auth
+def status():
+    return jsonify(status=200, indent=4, sort_keys=True, result=get_status())
 
 #### Synology surveillance camera
 

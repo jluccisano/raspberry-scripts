@@ -169,7 +169,7 @@ curl -X POST \
      --header "Content-Type: application/json" \
      -u user:passwd \
      -d '{
-         "cron_expression": "46 15 * * *"
+         "cron_expression": "07 21 * * *"
          }' \
      "http://localhost:8515/api/sprinkler/v2/scenario"
 ```
@@ -178,6 +178,10 @@ Get list of scenario
 
 ```bash
 curl -X GET -u user:passwd "http://localhost:8515/api/sprinkler/scenarios"
+```
+
+```bash
+curl -X GET -u user:passwd "http://localhost:8515/api/sprinkler/status"
 ```
 
 ```bash

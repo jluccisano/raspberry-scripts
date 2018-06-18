@@ -67,10 +67,13 @@ class SprinklerStepMachine:
         logging.info('drop_by_drop duration: %d', drop_by_drop_duration)
 
         self._is_running = True
+        self._status = {}
 
         try:
             for zone in self._sprinklerControl.get_zones_definition():
                 logging.info('Run: %s', zone['name'])
+                self._status['zone'] = zone['name']
+                logging.info(self._status)
                 if zone["type"] == "irrigate":
                     self._run_step(zone['id'], irrigate_duration)
                 elif zone["type"] == "drop_by_drop":
@@ -78,8 +81,10 @@ class SprinklerStepMachine:
         except Exception:
             logging.info('Scenario aborted')
             self._sprinklerControl.set_all_zones(1)
+            self._status = {}
         logging.info('finish scenario')
         self._is_running = False
+        self._status = {}
 
     def _run_step(self, zone, duration):
         self._sprinklerControl.set_zone(zone, 1)
@@ -89,7 +94,19 @@ class SprinklerStepMachine:
                 logging.info('is aborted 3')
                 raise Exception('Aborted by user')
             time.sleep(interval)
-            self._sprinklerControl.set_zone(zone, 0)
+            self._update_status((i * interval), duration)
+        self._sprinklerControl.set_zone(zone, 0)
+
+    def _update_status(self, current, duration):
+        self._status['percent_completed'] = (current / float(duration) * 100)
+        logging.info(self._status)
+
+    def get_status(self):
+        if self._is_running:
+            logging.info(self._status)
+            return self._status
+        else:
+            raise Exception('No scenario is running')
 
     def __init__(self):
         """Initialize a Weather station API."""
@@ -97,11 +114,15 @@ class SprinklerStepMachine:
         self._sprinklerControl = SprinklerControl()
         self._is_running = False
         self._is_aborted = False
+        self._status = {}
 
 sprinklerStepMachine = SprinklerStepMachine()
 
 def run_scenario():
     sprinklerStepMachine.start()
+
+def get_status():
+    return sprinklerStepMachine.get_status()
 
 def stop_scenario():
     sprinklerStepMachine.stop()
