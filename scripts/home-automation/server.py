@@ -17,6 +17,8 @@ from alarm_service import *
 from auth import *
 from sprinkler_service import *
 
+logging.basicConfig(level=logging.INFO)
+
 log = logging.getLogger('apscheduler.executors.default')
 log.setLevel(logging.INFO)  # DEBUG
 fmt = logging.Formatter('%(levelname)s:%(name)s:%(message)s')
@@ -129,13 +131,12 @@ def reset():
 # POST /api/sprinkler/v2/scenario
 @app.route("/api/sprinkler/v2/scenario", methods=['POST'])
 @requires_auth
-def scenario():
+def mode_auto():
+    body = request.get_json(force=True)
     force = request.args.get('force', bool)
     job = ""
-    body = request.get_json(silent=True)
-    if body is None:
-        body = json.load(request.form.get('data'))
     cron_expression = body['cron_expression']
+    print cron_expression
     if cron_expression is None:
         return jsonify(status=404, indent=4, sort_keys=True, result={'message': 'Cron expression param is mandatory'})
     # run direct
@@ -146,9 +147,20 @@ def scenario():
         print current
         if current:
             scheduler.remove_job("myScenario", "default")
-        job = scheduler.add_job(func=run_scenario, id="myScenario", trigger=CronTrigger.from_crontab(cron_expression))
+        job = scheduler.add_job(run_scenario, trigger=CronTrigger.from_crontab(cron_expression), id="myScenario")
     print job
     return jsonify(status=200, indent=4, sort_keys=True, result=str(job))
+
+# POST /api/sprinkler/v2/scenario
+@app.route("/api/sprinkler/v3/disable", methods=['POST'])
+@requires_auth
+def mode_manu():
+    current = scheduler.get_job("myScenario", "default")
+    print current
+    if current:
+        scheduler.remove_job("myScenario", "default")
+    sprinklerStepMachine.stop()
+    return jsonify(status=200, indent=4, sort_keys=True)
 
 
 # GET /sprinkler/zone/1

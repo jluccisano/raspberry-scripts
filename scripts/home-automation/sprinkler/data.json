@@ -3,7 +3,6 @@
     {
       "id": 1,
       "name": "Zone A",
-      "description": "",
       "type": "irrigate",
       "relay": 2,
       "relayIn": 2,
@@ -14,7 +13,6 @@
     {
       "id": 2,
       "name": "Zone B",
-      "description": "",
       "type": "irrigate",
       "relay": 1,
       "relayIn": 1,
@@ -25,7 +23,6 @@
     {
       "id": 3,
       "name": "Zone C",
-      "description": "",
       "type": "irrigate",
       "relay": 1,
       "relayIn": 4,
@@ -36,7 +33,6 @@
     {
       "id": 4,
       "name": "Zone D",
-      "description": "",
       "type": "irrigate",
       "relay": 1,
       "relayIn": 3,
@@ -47,7 +43,6 @@
     {
       "id": 5,
       "name": "Zone E",
-      "description": "Drop by drop",
       "type": "drop_by_drop",
       "relay": 2,
       "relayIn": 1,

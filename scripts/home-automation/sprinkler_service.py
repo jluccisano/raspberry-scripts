@@ -2,6 +2,8 @@ import ConfigParser
 import os
 import sys
 import time
+import logging
+from tqdm import tqdm
 
 from netatmo.weather_station import WeatherStationApi
 from sprinkler.zone_control_helpers import SprinklerControl
@@ -25,46 +27,84 @@ weather_station = WeatherStationApi(username, password, client_id, client_secret
 # precip 13-15mm/h
 ROTOR_PRECIPITATION_RATE_BY_HOUR = 15
 # Target 4mm/h
-TARGET = 4
+TARGET = 3
 
 DROP_BY_DROP_RATE_BY_HOUR = 4
-DROP_BY_DROP_TARGET = 4
-
+DROP_BY_DROP_TARGET = 3
 
 def calculate_seconds_to_sprinkle(last_24_precip):
-    return ((TARGET - last_24_precip) / ROTOR_PRECIPITATION_RATE_BY_HOUR) * 3600
+    return ((TARGET - last_24_precip) / float(ROTOR_PRECIPITATION_RATE_BY_HOUR)) * 3600
 
 def calculate_seconds_to_sprinkle_drop_by_drop(last_24_precip):
     return ((DROP_BY_DROP_TARGET - last_24_precip) / DROP_BY_DROP_RATE_BY_HOUR) * 3600
 
+class SprinklerStepMachine:
+
+    def is_running(self):
+        return self._is_running
+
+    def is_aborted(self):
+        return self._is_aborted
+
+    def set_aborted(self, val):
+        self._is_aborted = val
+
+    def stop(self):
+        self._is_aborted = True
+
+    def start(self):
+        logging.info('start run scenario')
+
+        rain_data = weather_station.get_rain_data(station_id, pluvio_id)
+        last_24_precip = rain_data["sum_rain_24"]
+
+        logging.info('get last 24 precipication: %d', last_24_precip)
+
+        irrigate_duration = calculate_seconds_to_sprinkle(last_24_precip)
+        drop_by_drop_duration = calculate_seconds_to_sprinkle_drop_by_drop(last_24_precip)
+
+        logging.info('irrigate duration: %d', irrigate_duration)
+        logging.info('drop_by_drop duration: %d', drop_by_drop_duration)
+
+        self._is_running = True
+
+        try:
+            for zone in self._sprinklerControl.get_zones_definition():
+                logging.info('Run: %s', zone['name'])
+                if zone["type"] == "irrigate":
+                    self._run_step(zone['id'], irrigate_duration)
+                elif zone["type"] == "drop_by_drop":
+                    self._run_step(zone['id'], drop_by_drop_duration)
+        except Exception:
+            logging.info('Scenario aborted')
+            self._sprinklerControl.set_all_zones(1)
+        logging.info('finish scenario')
+        self._is_running = False
+
+    def _run_step(self, zone, duration):
+        self._sprinklerControl.set_zone(zone, 1)
+        interval = float(duration) / 100
+        for i in tqdm(range(100)):
+            if self._is_aborted:
+                logging.info('is aborted 3')
+                raise Exception('Aborted by user')
+            time.sleep(interval)
+            self._sprinklerControl.set_zone(zone, 0)
+
+    def __init__(self):
+        """Initialize a Weather station API."""
+        print 'Starting Weather Station API'
+        self._sprinklerControl = SprinklerControl()
+        self._is_running = False
+        self._is_aborted = False
+
+sprinklerStepMachine = SprinklerStepMachine()
+
 def run_scenario():
-    print 'start run scenario'
+    sprinklerStepMachine.start()
 
-    print "check rain data"
-    rain_data = weather_station.get_rain_data(station_id, pluvio_id)
-    last_24_precip = rain_data["sum_rain_24"]
-
-    irrigate_duration = calculate_seconds_to_sprinkle(last_24_precip)
-    drop_by_drop_duration = calculate_seconds_to_sprinkle_drop_by_drop(last_24_precip)
-
-    try:
-        for zone in sprinklerControl.get_zones_definition():
-            if zone["type"] == "irrigate":
-                _run_step(zone['id'], irrigate_duration)
-            elif zone["type"] == "drop_by_drop":
-                _run_step(zone['id'], drop_by_drop_duration)
-    except KeyboardInterrupt:
-        sprinklerControl.set_all_zones(1)
-        sys.exit(0)
-    print 'finish scenario'
-
-
-def _run_step(zone, duration):
-    print zone["description"]
-    sprinklerControl.set_zone(zone, 1)
-    time.sleep(float(duration))
-    sprinklerControl.set_zone(zone, 0)
-
+def stop_scenario():
+    sprinklerStepMachine.stop()
 
 def set_zone(zoneId, state):
     return sprinklerControl.set_zone(zoneId, state)

@@ -21,6 +21,8 @@ sudo pip install apscheduler
 
 sudo pip install sqlalchemy
 
+sudo pip install flask-swagger-ui
+
 ```
 
 ```bash
@@ -95,6 +97,9 @@ sudo chmod u+x server.py
 ```bash
 sudo systemctl daemon-reload
 ```
+```bash
+sudo systemctl restart home-automation.service
+```
 
 ```bash
 sudo systemctl start home-automation.service
@@ -156,33 +161,6 @@ curl -X POST -u user:passwd "http://localhost:8515/sprinkler/reset"
 
 Run scenario
 
-```bash
-curl -X POST \
-     --header "Content-Type: application/json" \
-     -u user:passwd \
-     -d '[{
-         	"duration": "5",
-         	"zone": "1",
-         	"description": "Zone A"
-         },
-         {
-         	"duration": "5",
-         	"zone": "2",
-         	"description": "Zone B"
-         },
-         {
-         	"duration": "5",
-         	"zone": "3",
-         	"description": "Zone C"
-         }]' \
-     "http://localhost:8515/sprinkler/scenario"
-```
-
-Trigger job
-
-```bash
-curl -X POST -u user:passwd "http://localhost:8515/sprinkler/scenario/{id}"
-```
 
 Schedule scenario
 
@@ -191,47 +169,19 @@ curl -X POST \
      --header "Content-Type: application/json" \
      -u user:passwd \
      -d '{
-         "id" : "scenario1",
-         "cron_expression": "* * * * *",
-         "scenario": [{
-            	"duration": "5",
-            	"zone": "1",
-            	"description": "Zone A"
-            },
-            {
-            	"duration": "5",
-            	"zone": "2",
-            	"description": "Zone B"
-            },
-            {
-            	"duration": "5",
-            	"zone": "3",
-            	"description": "Zone C"
-         }]
-         }' \
-     "http://localhost:8515/sprinkler/schedule"
-```
-
-
-Schedule scenario
-
-```bash
-curl -X POST \
-     --header "Content-Type: application/json" \
-     -u user:passwd \
-     -d '{
-         "id" : "scenario1",
-         "cron_expression": "* * * * *",
+         "cron_expression": "46 15 * * *"
          }' \
      "http://localhost:8515/api/sprinkler/v2/scenario"
 ```
-
-
 
 Get list of scenario
 
 ```bash
 curl -X GET -u user:passwd "http://localhost:8515/api/sprinkler/scenarios"
+```
+
+```bash
+curl -X POST -u user:passwd "http://localhost:8515/api/sprinkler/v3/disable"
 ```
 
 Delete scenario  by id
