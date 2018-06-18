@@ -1,5 +1,6 @@
 import requests
 
+ERROR_CODE_SESSION_EXPIRED = 105
 
 class WeatherStationApi:
     """An implementation of a Weather Station API."""
@@ -36,15 +37,41 @@ class WeatherStationApi:
         except requests.exceptions.HTTPError as error:
             print(error.response.status_code, error.response.text)
 
+    def _get(self, url, params):
+        response = requests.post(url, params=params)
+        response.raise_for_status()
+        return response
+
+    def _get_json(self, url, params):
+        response = self._get(url, params)
+        content = response.json()
+        if content is None:
+            error_code = content.get('error', {}).get('code')
+
+            if ERROR_CODE_SESSION_EXPIRED == error_code:
+                raise SessionExpiredException('Session expired')
+
+            raise ValueError('Invalid or failed response', content)
+
+        return content
+
+    def _get_json_with_retry(self, url, params):
+        try:
+            return self._get_json(url, params)
+        except SessionExpiredException:
+            self._initialize_api_token()
+            return self._get_json(url, params)
+
     def get_rain_data(self, station_id, pluvio_id):
         params = {
             'access_token': self._access_token,
             'device_id': station_id
         }
         try:
-            response = requests.post("https://api.netatmo.com/api/getstationsdata", params=params)
-            response.raise_for_status()
-            json_response = response.json()["body"]
+            r = self._get_json_with_retry("https://api.netatmo.com/api/getstationsdata", params)
+            #response = requests.post("https://api.netatmo.com/api/getstationsdata", params=params)
+            #response.raise_for_status()
+            json_response = r["body"]
 
             dashboard_data = ""
             for device in json_response["devices"]:
@@ -67,3 +94,8 @@ class WeatherStationApi:
         self._client_id = client_id
         self._client_secret = client_secret
         self._initialize_api_token()
+
+
+class SessionExpiredException(Exception):
+    """An error indicating session expired."""
+    pass

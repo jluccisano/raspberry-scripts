@@ -155,11 +155,11 @@ def mode_auto():
 @app.route("/api/sprinkler/v3/disable", methods=['POST'])
 @requires_auth
 def mode_manu():
+    sprinklerStepMachine.stop()
     current = scheduler.get_job("myScenario", "default")
     print current
     if current:
         scheduler.remove_job("myScenario", "default")
-    sprinklerStepMachine.stop()
     return jsonify(status=200, indent=4, sort_keys=True)
 
 
