@@ -46,12 +46,13 @@ class WeatherStationApi:
         response = self._get(url, params)
         content = response.json()
         if content is None:
-            error_code = content.get('error', {}).get('code')
+            print content
+            #error_code = content.get('error', {}).get('code')
 
-            if ERROR_CODE_SESSION_EXPIRED == error_code:
-                raise SessionExpiredException('Session expired')
+            #if ERROR_CODE_SESSION_EXPIRED == error_code:
+            raise SessionExpiredException('Session expired')
 
-            raise ValueError('Invalid or failed response', content)
+            #raise ValueError('Invalid or failed response', content)
 
         return content
 

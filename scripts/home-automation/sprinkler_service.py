@@ -88,7 +88,7 @@ class SprinklerStepMachine:
 
     def _run_step(self, zone, duration):
         logging.info('starting step %s', zone)
-        self._sprinklerControl.set_zone(zone, 1)
+        self._sprinklerControl.set_zone(zone, 0)
         interval = float(duration) / 100
         for i in tqdm(range(100)):
             if self._is_aborted:
@@ -97,7 +97,7 @@ class SprinklerStepMachine:
             time.sleep(interval)
             self._update_status((i * interval), duration)
         logging.info('finished step %', zone)
-        self._sprinklerControl.set_zone(zone, 0)
+        self._sprinklerControl.set_zone(zone, 1)
 
     def _update_status(self, current, duration):
         self._status['percent_completed'] = (current / float(duration) * 100)
