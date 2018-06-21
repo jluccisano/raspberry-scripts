@@ -21,6 +21,10 @@ pluvio_id = config.get('NETATMO', 'pluvio_id')
 sprinklerControl = SprinklerControl()
 weather_station = WeatherStationApi(username, password, client_id, client_secret)
 
+rain_data = weather_station.get_rain_data(station_id, pluvio_id)
+
+
+
 # https://rainbird.com/sites/default/files/media/documents/2018-02/ts_3500.pdf
 # pressure 3,5
 # Nozzle 2
