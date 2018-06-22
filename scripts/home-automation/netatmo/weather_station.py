@@ -1,4 +1,5 @@
 import requests
+import logging
 
 ERROR_CODE_SESSION_EXPIRED = 105
 
