@@ -40,7 +40,7 @@ def calculate_seconds_to_sprinkle(last_24_precip):
     return ((TARGET - last_24_precip) / float(ROTOR_PRECIPITATION_RATE_BY_HOUR)) * 3600
 
 def calculate_seconds_to_sprinkle_drop_by_drop(last_24_precip):
-    return ((DROP_BY_DROP_TARGET - last_24_precip) / DROP_BY_DROP_RATE_BY_HOUR) * 3600
+    return ((DROP_BY_DROP_TARGET - last_24_precip) / float(DROP_BY_DROP_RATE_BY_HOUR)) * 3600
 
 class SprinklerStepMachine:
 
@@ -100,7 +100,7 @@ class SprinklerStepMachine:
                 raise Exception('Aborted by user')
             time.sleep(interval)
             self._update_status((i * interval), duration)
-        logging.info('finished step %', zone)
+        logging.info('finished step %s', zone)
         self._sprinklerControl.set_zone(zone, 1)
 
     def _update_status(self, current, duration):
