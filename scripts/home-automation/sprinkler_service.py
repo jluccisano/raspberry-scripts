@@ -31,10 +31,10 @@ rain_data = weather_station.get_rain_data(station_id, pluvio_id)
 # precip 13-15mm/h
 ROTOR_PRECIPITATION_RATE_BY_HOUR = 15
 # Target 4mm/h
-TARGET = 3
+TARGET = 2
 
 DROP_BY_DROP_RATE_BY_HOUR = 4
-DROP_BY_DROP_TARGET = 3
+DROP_BY_DROP_TARGET = 2
 
 def calculate_seconds_to_sprinkle(last_24_precip):
     return ((TARGET - last_24_precip) / float(ROTOR_PRECIPITATION_RATE_BY_HOUR)) * 3600
