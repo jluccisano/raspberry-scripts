@@ -16,6 +16,7 @@ from pytz import utc
 from alarm_service import *
 from auth import *
 from sprinkler_service import *
+from weather_service import get_rain
 
 logging.basicConfig(level=logging.INFO)
 
@@ -75,6 +76,14 @@ def jsonify(status=200, indent=4, sort_keys=True, **kwargs):
 def swagger_json():
     # Read before use: http://flask.pocoo.org/docs/0.12/api/#flask.send_file
     return send_file('resources/swagger.json')
+
+##### Weather
+
+# GET /weather/rain
+@app.route("/api/weather/rain", methods=['GET'])
+@requires_auth
+def get_rain_data():
+    return jsonify(status=200, indent=4, sort_keys=True, result=get_rain())
 
 # POST /sprinkler/zones/1?state=1
 @app.route("/sprinkler/zones/<zoneId>", methods=['POST'])
@@ -199,6 +208,7 @@ def enable_camera_by_id(id):
 @requires_auth
 def disable_camera_by_id(id):
     return jsonify(status=200, indent=4, sort_keys=True, result=disable_camera(id))
+
 
 
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)

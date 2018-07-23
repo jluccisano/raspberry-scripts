@@ -216,3 +216,9 @@ curl -X POST -u user:passwd "http://localhost:8515/cameras/13/enable"
 ```bash
 curl -X POST -u user:passwd "http://localhost:8515/cameras/13/disable"
 ```
+
+# Weather API
+
+```bash
+curl -X GET -u user:passwd "http://localhost:8515/api/weather/rain"
+```

@@ -21,9 +21,6 @@ pluvio_id = config.get('NETATMO', 'pluvio_id')
 sprinklerControl = SprinklerControl()
 weather_station = WeatherStationApi(username, password, client_id, client_secret)
 
-rain_data = weather_station.get_rain_data(station_id, pluvio_id)
-
-
 
 # https://rainbird.com/sites/default/files/media/documents/2018-02/ts_3500.pdf
 # pressure 3,5
@@ -33,7 +30,7 @@ ROTOR_PRECIPITATION_RATE_BY_HOUR = 15
 # Target 4mm/h
 TARGET = 2
 
-DROP_BY_DROP_RATE_BY_HOUR = 4
+DROP_BY_DROP_RATE_BY_HOUR = 3
 DROP_BY_DROP_TARGET = 2
 
 def calculate_seconds_to_sprinkle(last_24_precip):
@@ -62,13 +59,13 @@ class SprinklerStepMachine:
         rain_data = weather_station.get_rain_data(station_id, pluvio_id)
         last_24_precip = rain_data["sum_rain_24"]
 
-        logging.info('get last 24 precipication: %d', last_24_precip)
+        logging.info('get last 24 precipication: %f', last_24_precip)
 
         irrigate_duration = calculate_seconds_to_sprinkle(last_24_precip)
         drop_by_drop_duration = calculate_seconds_to_sprinkle_drop_by_drop(last_24_precip)
 
-        logging.info('irrigate duration: %d', irrigate_duration)
-        logging.info('drop_by_drop duration: %d', drop_by_drop_duration)
+        logging.info('irrigate duration: %f', irrigate_duration)
+        logging.info('drop_by_drop duration: %f', drop_by_drop_duration)
 
         self._is_running = True
         self._status = {}
