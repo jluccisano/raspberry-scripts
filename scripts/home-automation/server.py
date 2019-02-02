@@ -210,14 +210,14 @@ def disable_camera_by_id(id):
     return jsonify(status=200, indent=4, sort_keys=True, result=disable_camera(id))
 
 
-# POST /cameras/enable
-@app.route("/cameras/enable", methods=['POST'])
+# POST /alarm/on
+@app.route("/alarm/on", methods=['POST'])
 @requires_auth
 def enable_cameras():
     return jsonify(status=200, indent=4, sort_keys=True, result=enable_cameras())
 
-# POST /cameras/disable
-@app.route("/cameras/disable", methods=['POST'])
+# POST /alarm/off
+@app.route("/alarm/off", methods=['POST'])
 @requires_auth
 def disable_cameras():
     return jsonify(status=200, indent=4, sort_keys=True, result=disable_cameras())
