@@ -64,6 +64,7 @@ scheduler.start()
 
 app = Flask(__name__, static_url_path='/resources')
 
+
 def jsonify(status=200, indent=4, sort_keys=True, **kwargs):
     response = make_response(dumps(dict(**kwargs), indent=indent, sort_keys=sort_keys))
     response.headers['Content-Type'] = 'application/json; charset=utf-8'
@@ -77,6 +78,7 @@ def swagger_json():
     # Read before use: http://flask.pocoo.org/docs/0.12/api/#flask.send_file
     return send_file('resources/swagger.json')
 
+
 ##### Weather
 
 # GET /weather/rain
@@ -84,6 +86,7 @@ def swagger_json():
 @requires_auth
 def get_rain_data():
     return jsonify(status=200, indent=4, sort_keys=True, result=get_rain())
+
 
 # POST /sprinkler/zones/1?state=1
 @app.route("/sprinkler/zones/<zoneId>", methods=['POST'])
@@ -160,6 +163,7 @@ def mode_auto():
     print job
     return jsonify(status=200, indent=4, sort_keys=True, result=str(job))
 
+
 # POST /api/sprinkler/v2/scenario
 @app.route("/api/sprinkler/v3/disable", methods=['POST'])
 @requires_auth
@@ -178,11 +182,13 @@ def mode_manu():
 def get_scenarios():
     return jsonify(status=200, indent=4, sort_keys=True, result=str(scheduler.get_jobs()))
 
+
 # GET /sprinkler/zone/1
 @app.route("/api/sprinkler/v4/status", methods=['GET'])
 @requires_auth
 def status():
     return jsonify(status=200, indent=4, sort_keys=True, result=get_status())
+
 
 #### Synology surveillance camera
 
@@ -213,15 +219,15 @@ def disable_camera_by_id(id):
 # POST /alarm/on
 @app.route("/alarm/on", methods=['POST'])
 @requires_auth
-def enable_cameras():
+def enable_alarm():
     return jsonify(status=200, indent=4, sort_keys=True, result=enable_cameras())
+
 
 # POST /alarm/off
 @app.route("/alarm/off", methods=['POST'])
 @requires_auth
-def disable_cameras():
+def disable_alarm():
     return jsonify(status=200, indent=4, sort_keys=True, result=disable_cameras())
-
 
 
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
