@@ -18,6 +18,12 @@ def disable_camera(id):
 def enable_camera(id):
     return synoApi.enable_camera(id)
 
+def disable_cameras():
+    return synoApi.disable_camera(1) and synoApi.disable_camera(2)
+
+def enable_cameras():
+    return synoApi.enable_camera(1) and synoApi.enable_camera(2)
+
 
 def get_camera_by_name(name):
     synoApi.get_camera_by_name(name)

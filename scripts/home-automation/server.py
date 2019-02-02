@@ -210,6 +210,19 @@ def disable_camera_by_id(id):
     return jsonify(status=200, indent=4, sort_keys=True, result=disable_camera(id))
 
 
+# POST /cameras/enable
+@app.route("/cameras/enable", methods=['POST'])
+@requires_auth
+def enable_cameras():
+    return jsonify(status=200, indent=4, sort_keys=True, result=enable_cameras())
+
+# POST /cameras/disable
+@app.route("/cameras/disable", methods=['POST'])
+@requires_auth
+def disable_cameras():
+    return jsonify(status=200, indent=4, sort_keys=True, result=disable_cameras())
+
+
 
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 # Shutdown your cron thread if the web process is stopped
